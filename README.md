@@ -1,1 +1,1 @@
-# architecturekatas2026-vde
+# Orielly architectural katas 2026-Von Digitalis estates
