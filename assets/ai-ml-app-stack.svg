@@ -1,0 +1,131 @@
+<svg viewBox="0 0 1900 1300" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="mk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker>
+  <marker id="mkb" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/></marker>
+  <marker id="mkr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#dc2626"/></marker>
+</defs>
+<rect width="1900" height="1300" fill="#ffffff"/>
+<text x="60" y="70" text-anchor="start" font-size="34" font-weight="700" fill="#1d4ed8" >Von Digitalis Estates — AI/ML App Stack</text>
+<text x="60" y="100" text-anchor="start" font-size="15" font-weight="400" fill="#64748b" >Mapped onto the a16z &#8220;Emerging LLM App Stack&#8221; framework, using this solution's actual components</text>
+<rect x="330" y="190" width="260" height="90" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="460.0" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Ingestion Pipeline</text>
+<text x="460.0" y="235" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(LoRaWAN &#8594; MQTT gateways,</text>
+<text x="460.0" y="252" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >ADR001)</text>
+<rect x="660" y="190" width="290" height="90" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="805.0" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Species-Tiered Baseline Models</text>
+<text x="805.0" y="235" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(mammals, reptiles, aquatic,</text>
+<text x="805.0" y="252" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >ADR005)</text>
+<rect x="1020" y="190" width="280" height="90" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="1160.0" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Time-Series + Object Storage</text>
+<text x="1160.0" y="235" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(telemetry &amp; media,</text>
+<text x="1160.0" y="252" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >ADR014)</text>
+<text x="60" y="225" text-anchor="start" font-size="20" font-weight="700" fill="#0f172a" >Sensor &amp;</text>
+<text x="60" y="248" text-anchor="start" font-size="20" font-weight="700" fill="#0f172a" >keeper</text>
+<text x="60" y="271" text-anchor="start" font-size="20" font-weight="700" fill="#0f172a" >history</text>
+<line x1="200" y1="240" x2="330" y2="240" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="590" y1="228" x2="660" y2="228" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="950" y1="228" x2="1020" y2="228" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="950" y1="258" x2="1020" y2="258" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<path d="M390,280 V330 L760,430" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" fill="none" marker-end="url(#mk)"/>
+<path d="M805.0,280 V430" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" fill="none" marker-end="url(#mk)"/>
+<path d="M1240,280 V330 L830,430" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" fill="none" marker-end="url(#mk)"/>
+<rect x="330" y="430" width="260" height="90" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="460.0" y="458" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Ops &amp; Keeper Console</text>
+<text x="460.0" y="475" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(alert review dashboard,</text>
+<text x="460.0" y="492" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >ADR007 UI)</text>
+<rect x="660" y="430" width="300" height="530" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="810.0" y="480" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Orchestration</text>
+<text x="810.0" y="497" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(event-driven services,</text>
+<text x="810.0" y="514" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >MQTT bus, ADR012)</text>
+<rect x="1020" y="430" width="280" height="90" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="1160.0" y="458" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >External Integrations</text>
+<text x="1160.0" y="475" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(Ticketing SaaS &#8212; ADR009,</text>
+<text x="1160.0" y="492" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >OAuth Identity &#8212; ADR016)</text>
+<text x="60" y="468" text-anchor="start" font-size="20" font-weight="700" fill="#0f172a" >Keeper</text>
+<text x="60" y="491" text-anchor="start" font-size="20" font-weight="700" fill="#0f172a" >threshold</text>
+<text x="60" y="514" text-anchor="start" font-size="20" font-weight="700" fill="#0f172a" >input</text>
+<line x1="220" y1="480" x2="330" y2="480" stroke="#475569" stroke-width="1.6" marker-end="url(#mk)"/>
+<line x1="590" y1="460" x2="660" y2="460" stroke="#475569" stroke-width="1.6" marker-end="url(#mk)"/>
+<line x1="660" y1="480" x2="590" y2="480" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="660" y1="500" x2="590" y2="500" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<line x1="960" y1="460" x2="1020" y2="460" stroke="#475569" stroke-width="1.6" marker-end="url(#mk)"/>
+<line x1="1020" y1="480" x2="960" y2="480" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<rect x="330" y="760" width="260" height="90" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="460.0" y="788" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Cloud Platform Hosting</text>
+<text x="460.0" y="805" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(managed / serverless,</text>
+<text x="460.0" y="822" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >ADR013)</text>
+<text x="60" y="700" text-anchor="start" font-size="19" font-weight="700" fill="#0f172a" >Visitor scan /</text>
+<text x="60" y="723" text-anchor="start" font-size="19" font-weight="700" fill="#0f172a" >ticket purchase</text>
+<text x="60" y="746" text-anchor="start" font-size="19" font-weight="700" fill="#0f172a" >(Query)</text>
+<path d="M150,730 V805 H330" stroke="#2563eb" stroke-width="1.6" fill="none" marker-end="url(#mkb)"/>
+<text x="60" y="860" text-anchor="start" font-size="20" font-weight="700" fill="#0f172a" >Output</text>
+<line x1="330" y1="850" x2="155" y2="850" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<line x1="590" y1="805" x2="660" y2="805" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="660" y1="830" x2="590" y2="830" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<rect x="1020" y="585" width="280" height="100" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="1160.0" y="611" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Verification Gate</text>
+<text x="1160.0" y="628" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(golden-set regression,</text>
+<text x="1160.0" y="645" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >ADR011, ADR020)</text>
+<rect x="1020" y="715" width="280" height="100" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="1160.0" y="741" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Observability &amp; Drift Monitoring</text>
+<text x="1160.0" y="758" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(shared stack,</text>
+<text x="1160.0" y="775" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >ADR017, ADR011)</text>
+<rect x="1020" y="845" width="280" height="110" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="1160.0" y="871" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Alert Tiering &amp;</text>
+<text x="1160.0" y="888" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" >Human-in-the-Loop</text>
+<text x="1160.0" y="905" text-anchor="middle" font-size="13" font-weight="400" fill="#334155" >(keeper confirm/dismiss, ADR007)</text>
+<line x1="960" y1="613.0" x2="1020" y2="613.0" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="960" y1="628.0" x2="1020" y2="628.0" stroke="#475569" stroke-width="1.6" marker-end="url(#mk)"/>
+<line x1="1020" y1="643.0" x2="960" y2="643.0" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="1020" y1="658.0" x2="960" y2="658.0" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<line x1="960" y1="743.0" x2="1020" y2="743.0" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="960" y1="758.0" x2="1020" y2="758.0" stroke="#475569" stroke-width="1.6" marker-end="url(#mk)"/>
+<line x1="1020" y1="773.0" x2="960" y2="773.0" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="1020" y1="788.0" x2="960" y2="788.0" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<line x1="960" y1="878.0" x2="1020" y2="878.0" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="960" y1="893.0" x2="1020" y2="893.0" stroke="#475569" stroke-width="1.6" marker-end="url(#mk)"/>
+<line x1="1020" y1="908.0" x2="960" y2="908.0" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="1020" y1="923.0" x2="960" y2="923.0" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<rect x="1380" y="560" width="460" height="470" rx="16" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text x="1610.0" y="592" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a" font-style="italic">AI Model Providers &amp; Hosting</text>
+<text x="1610.0" y="614" text-anchor="middle" font-size="13" font-weight="400" fill="#64748b" >(via Model Abstraction Layer &#8212; ADR010)</text>
+<rect x="1405" y="640" width="200" height="110" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+<text x="1505.0" y="666" text-anchor="middle" font-size="12" font-weight="700" fill="#78350f" >Frontier / Commercial API</text>
+<text x="1505.0" y="683" text-anchor="middle" font-size="12" font-weight="400" fill="#78350f" >(higher-stakes tasks &#8212;</text>
+<text x="1505.0" y="700" text-anchor="middle" font-size="12" font-weight="400" fill="#78350f" >population-count checks)</text>
+<rect x="1620" y="640" width="200" height="110" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+<text x="1720.0" y="666" text-anchor="middle" font-size="12" font-weight="700" fill="#78350f" >Open / Self-Hosted Models</text>
+<text x="1720.0" y="683" text-anchor="middle" font-size="12" font-weight="400" fill="#78350f" >(lower-stakes tasks &#8212;</text>
+<text x="1720.0" y="700" text-anchor="middle" font-size="12" font-weight="400" fill="#78350f" >lower cost &amp; lock-in, ADR010)</text>
+<rect x="1405" y="770" width="200" height="110" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+<text x="1505.0" y="796" text-anchor="middle" font-size="12" font-weight="700" fill="#14532d" >Cloud Provider</text>
+<text x="1505.0" y="813" text-anchor="middle" font-size="12" font-weight="400" fill="#14532d" >(single mainstream,</text>
+<text x="1505.0" y="830" text-anchor="middle" font-size="12" font-weight="400" fill="#14532d" >managed/serverless, ADR013)</text>
+<rect x="1620" y="770" width="200" height="110" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+<text x="1720.0" y="796" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a" >Edge Inference</text>
+<text x="1720.0" y="813" text-anchor="middle" font-size="12" font-weight="400" fill="#1e3a8a" >(on-gateway thresholds,</text>
+<text x="1720.0" y="830" text-anchor="middle" font-size="12" font-weight="400" fill="#1e3a8a" >works offline, ADR002)</text>
+<line x1="1300" y1="625.0" x2="1380" y2="625.0" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="1380" y1="640.0" x2="1300" y2="640.0" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="1380" y1="655.0" x2="1300" y2="655.0" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<line x1="1300" y1="755.0" x2="1380" y2="755.0" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="1380" y1="770.0" x2="1300" y2="770.0" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="1380" y1="785.0" x2="1300" y2="785.0" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<line x1="1300" y1="890.0" x2="1380" y2="890.0" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<line x1="1380" y1="905.0" x2="1300" y2="905.0" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<line x1="1380" y1="920.0" x2="1300" y2="920.0" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<rect x="60" y="1030" width="820" height="230" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="80" y="1060" text-anchor="start" font-size="16" font-weight="700" fill="#1d4ed8" >LEGEND</text>
+<rect x="76" y="1074" width="788" height="30" fill="#f1f5f9"/>
+<text x="86" y="1094" text-anchor="start" font-size="13" font-weight="700" fill="#0f172a" >Gray boxes show key components of the AI/ML stack, with the relevant ADR listed</text>
+<text x="86" y="1126" text-anchor="start" font-size="13" font-weight="700" fill="#0f172a" >Arrows show the flow of data through the stack</text>
+<line x1="86" y1="1150" x2="160" y2="1150" stroke="#475569" stroke-width="1.6" stroke-dasharray="6,4" marker-end="url(#mk)"/>
+<text x="176" y="1155" text-anchor="start" font-size="13" font-weight="400" fill="#1e293b" >Contextual / historical data conditioning models &amp; baselines</text>
+<line x1="86" y1="1180" x2="160" y2="1180" stroke="#475569" stroke-width="1.6" marker-end="url(#mk)"/>
+<text x="176" y="1185" text-anchor="start" font-size="13" font-weight="400" fill="#1e293b" >Thresholds, configuration, and requests sent downstream</text>
+<line x1="86" y1="1210" x2="160" y2="1210" stroke="#2563eb" stroke-width="1.6" marker-end="url(#mkb)"/>
+<text x="176" y="1215" text-anchor="start" font-size="13" font-weight="400" fill="#1e293b" >Live queries: visitor scans, sensor readings, keeper requests</text>
+<line x1="86" y1="1240" x2="160" y2="1240" stroke="#dc2626" stroke-width="1.6" marker-end="url(#mkr)"/>
+<text x="176" y="1245" text-anchor="start" font-size="13" font-weight="400" fill="#1e293b" >Output returned: alerts, dashboards, confirmations</text>
+<text x="1860" y="1275" text-anchor="end" font-size="12" font-weight="400" fill="#94a3b8" font-style="italic">Diagram structure adapted from a16z's &#8220;Emerging LLM App Stack&#8221; reference architecture.</text>
+</svg>

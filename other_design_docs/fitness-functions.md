@@ -29,14 +29,15 @@ Each fitness function specifies:
 
 ## Reliability & Data Integrity
 
-### FF-01: Zero data loss during simulated WiFi outage
+### FF-01: Zero data loss during simulated gateway backhaul outage
 - **Protects:** Reliability
 - **Type:** Atomic
 - **Trigger:** Triggered — runs in staging before every release
   affecting the ingestion path
-- **Mechanism:** Automated chaos test disconnects a simulated zone
-  gateway for 10/30/60 minutes, then verifies 100% of buffered events
-  are delivered with zero duplication on reconnect (ADR001).
+- **Mechanism:** Automated chaos test disconnects a simulated LoRaWAN
+  gateway concentrator's backhaul for 10/30/60 minutes, then verifies
+  100% of buffered events are delivered with zero duplication on
+  reconnect (ADR001).
 
 ### FF-02: Alert routing correctness
 - **Protects:** Reliability
@@ -131,9 +132,11 @@ Each fitness function specifies:
 - **Type:** Atomic
 - **Trigger:** Periodic (quarterly) + Triggered (on any reported
   device loss/theft)
-- **Mechanism:** Revoke a test device's TLS certificate (ADR015) and
-  confirm it can no longer publish to the MQTT broker within a defined
-  time window.
+- **Mechanism:** Two checks per ADR015's tiers — revoke a test LoRaWAN
+  sensor's session keys at the network/join server and confirm it can
+  no longer join or transmit; separately, revoke a test gateway
+  concentrator's TLS certificate and confirm it can no longer publish
+  to the MQTT broker — both within a defined time window.
 
 ---
 
@@ -153,4 +156,4 @@ Each fitness function specifies:
 ## Related Documents
 - [Architecture Characteristics](architecture-characteristics.md)
 - [Cost Analysis](cost-analysis.md)
-- [Test Approach](diagrams/test-approach.md)
+- [Test Approach](../usecases/test-approach.md)

@@ -66,6 +66,18 @@ The data flow below shows the two speeds this feature runs at: an
    tuning loop (ADR007) — the system gets better at telling real
    issues from noise over time.
 
+### Inside the Animal Monitoring Service
+
+This is the solution's most AI-dependent container, so it's the one
+use case worth zooming past the container level into its internal
+components — how event routing, baseline lookup, inference, alert
+tiering, and the golden-set/drift feedback loop actually fit together.
+
+![Component diagram zooming into the Animal Monitoring Service container: sensor/keeper event adapter, species-tier router, baseline profile store accessor, anomaly detection engine, alert tiering engine, notification dispatcher, keeper feedback capture, model tuning feedback writer, golden-set regression client, and drift monitor client, plus the edge gateway's urgent local-alert bypass path](../assets/uc02-animal-monitoring-c3.svg)
+
+See the [System Container Diagram](../assets/c2-container-diagram.svg)
+for how this service fits into the rest of the platform.
+
 ### How the "human in the loop" guardrail works
 
 Every alert this feature raises passes through the same tiering and
@@ -118,7 +130,7 @@ above).
   check-in cycle.
 
 ## See Also
-- **[UC02 Test Approach](../test-approach-usecases/uc02-test-approach.md)**
+- **[UC02 Test Approach](uc02-test-approach.md)**
   — traditional and AI testing strategy, including precision/recall,
   keeper-agreement, and drift metrics for this use case.
 - **[Diagrams README](../assets/README-diagrams.md)** — full

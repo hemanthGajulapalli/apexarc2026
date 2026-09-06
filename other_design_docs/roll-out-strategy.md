@@ -9,7 +9,7 @@ architecture: prove a use case on a small, controlled slice of the
 estate before committing budget and operational trust to it estate-wide
 (see the "pilot before scaling" theme in the ADR summary).
 
-![Rollout strategy diagram showing four phases: Foundations, Popularity Analytics, Animal Monitoring, and Scale & Personalize, each gated by pilot validation before expanding](assets/rollout-strategy.svg)
+![Rollout strategy diagram showing four phases: Foundations, Popularity Analytics, Animal Monitoring, and Scale & Personalize, each gated by pilot validation before expanding](../assets/rollout-strategy.svg)
 
 ## Why a Phased Approach
 
@@ -32,15 +32,19 @@ Two constraints shape this plan directly:
 **Goal:** Get the plumbing in place that every later phase depends on.
 
 - Ticketing SaaS platform live, issuing tickets and family passes
-  (ADR009).
-- Zone gateway and MQTT ingestion infrastructure deployed across all
-  rides and enclosures (ADR001).
+  (ADR009); OAuth-based visitor and staff identity live on the cloud
+  platform, linked to ticketing by account ID (ADR016).
+- Site RF survey completed to validate the 3-gateway LoRaWAN layout,
+  ahead of finalizing sensor/gateway procurement (ADR001).
+- LoRaWAN sensor and gateway-concentrator MQTT ingestion infrastructure
+  deployed across all rides and enclosures (ADR001).
 - Shared observability stack stood up (ADR017).
 - Simple, non-AI loyalty mechanism live at launch (ADR008 Phase One).
 
 **Exit criteria:** Tickets can be purchased and scanned reliably;
-gateway data reaches the cloud even through a simulated WiFi outage;
-loyalty enrollment is functioning.
+visitors and staff can authenticate via OAuth; gateway data reaches the
+cloud even through a simulated gateway backhaul outage; loyalty
+enrollment is functioning.
 
 ## Phase 1 — Popularity Analytics
 
@@ -115,4 +119,4 @@ fixed calendar date.
 - [Cost Analysis](cost-analysis.md)
 - [Architecture Characteristics](architecture-characteristics.md)
 - [Fitness Functions](fitness-functions.md)
-- [ADR Summary — Final Decisions & Advice](spikes/adr-summary-decisions-and-advice.md)
+- [ADR Summary — Final Decisions & Advice](../adviceforum/adr-summary-decisions-and-advice.md)

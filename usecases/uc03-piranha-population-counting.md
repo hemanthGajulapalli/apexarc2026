@@ -98,7 +98,7 @@ fully automated headcount.
   action — no automated response is triggered directly from a count.
 
 ## See Also
-- **[UC03 Test Approach](../test-approach-usecases/uc03-test-approach.md)**
+- **[UC03 Test Approach](uc03-test-approach.md)**
   — traditional and AI testing strategy, including MAE/MAPE and
   false/missed-decline metrics for this use case.
 - **[Diagrams README](../assets/README-diagrams.md)** — full

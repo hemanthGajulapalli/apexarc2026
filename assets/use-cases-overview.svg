@@ -1,0 +1,43 @@
+<svg viewBox="0 0 1760 560" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+<rect width="1760" height="560" fill="#ffffff"/>
+<text x="40" y="46" font-size="28" font-weight="700" fill="#0f172a">Prioritized Automation Use Cases</text>
+<text x="40" y="72" font-size="14" fill="#64748b">Four &#8220;how might we&#8221; questions the estate&#8217;s AI investment is scoped around, in priority order</text>
+<rect x="40" y="110" width="380" height="400" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="230.0" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#3b82f6" letter-spacing="1">UC01</text>
+<text x="230.0" y="176" text-anchor="middle" font-size="19" font-weight="700" fill="#1e3a8a">Visitor Popularity</text>
+<text x="230.0" y="200" text-anchor="middle" font-size="19" font-weight="700" fill="#1e3a8a">Analytics</text>
+<text x="230.0" y="228" text-anchor="middle" font-size="14" fill="#1e3a8a">How might we surface which rides</text>
+<text x="230.0" y="250" text-anchor="middle" font-size="14" fill="#1e3a8a">and enclosures are busiest, so</text>
+<text x="230.0" y="272" text-anchor="middle" font-size="14" fill="#1e3a8a">staffing and investment stop being</text>
+<text x="230.0" y="294" text-anchor="middle" font-size="14" fill="#1e3a8a">guesswork?</text>
+<line x1="64" y1="468" x2="396" y2="468" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+<text x="230.0" y="486" text-anchor="middle" font-size="12" fill="#1e3a8a">Ticket-gate scans + targeted BLE - ADR003, ADR004</text>
+<rect x="460" y="110" width="380" height="400" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="650.0" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#f59e0b" letter-spacing="1">UC02</text>
+<text x="650.0" y="176" text-anchor="middle" font-size="19" font-weight="700" fill="#78350f">Animal Health and Feeding</text>
+<text x="650.0" y="200" text-anchor="middle" font-size="19" font-weight="700" fill="#78350f">Monitoring</text>
+<text x="650.0" y="228" text-anchor="middle" font-size="14" fill="#78350f">How might we catch early signs of</text>
+<text x="650.0" y="250" text-anchor="middle" font-size="14" fill="#78350f">illness or feeding problems across</text>
+<text x="650.0" y="272" text-anchor="middle" font-size="14" fill="#78350f">55 enclosures, without watching</text>
+<text x="650.0" y="294" text-anchor="middle" font-size="14" fill="#78350f">every one continuously?</text>
+<line x1="484" y1="468" x2="816" y2="468" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+<text x="650.0" y="486" text-anchor="middle" font-size="12" fill="#78350f">Species-tiered anomaly detection - ADR005, ADR007</text>
+<rect x="880" y="110" width="380" height="400" rx="12" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+<text x="1070.0" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#ef4444" letter-spacing="1">UC03</text>
+<text x="1070.0" y="176" text-anchor="middle" font-size="19" font-weight="700" fill="#7f1d1d">Jumping Piranha Population</text>
+<text x="1070.0" y="200" text-anchor="middle" font-size="19" font-weight="700" fill="#7f1d1d">Counting</text>
+<text x="1070.0" y="228" text-anchor="middle" font-size="14" fill="#7f1d1d">How might we track the piranha</text>
+<text x="1070.0" y="250" text-anchor="middle" font-size="14" fill="#7f1d1d">population without building costly</text>
+<text x="1070.0" y="272" text-anchor="middle" font-size="14" fill="#7f1d1d">always-on underwater monitoring?</text>
+<line x1="904" y1="468" x2="1236" y2="468" stroke="#ef4444" stroke-width="1" opacity="0.5"/>
+<text x="1070.0" y="486" text-anchor="middle" font-size="12" fill="#7f1d1d">Periodic capture + vision model - ADR006</text>
+<rect x="1300" y="110" width="380" height="400" rx="12" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1490.0" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#94a3b8" letter-spacing="1">UC04 (Phase Two)</text>
+<text x="1490.0" y="176" text-anchor="middle" font-size="19" font-weight="700" fill="#1e293b">Returning Visitor Personalization</text>
+<text x="1490.0" y="206" text-anchor="middle" font-size="14" fill="#1e293b">How might we grow repeat visits</text>
+<text x="1490.0" y="228" text-anchor="middle" font-size="14" fill="#1e293b">once real ticketing and popularity</text>
+<text x="1490.0" y="250" text-anchor="middle" font-size="14" fill="#1e293b">data exists to personalize</text>
+<text x="1490.0" y="272" text-anchor="middle" font-size="14" fill="#1e293b">against?</text>
+<line x1="1324" y1="468" x2="1656" y2="468" stroke="#94a3b8" stroke-width="1" opacity="0.5"/>
+<text x="1490.0" y="486" text-anchor="middle" font-size="12" fill="#1e293b">Deferred until data justifies it - ADR008</text>
+</svg>

@@ -59,8 +59,9 @@ Run all infrastructure on estate-owned hardware.
 
 ## Advice
 * Compare 2-3 providers specifically on managed IoT/MQTT ingestion
-  pricing at expected device volumes (~100 gateways, per ADR001) before
-  finalizing — this is likely the largest variable cost driver.
+  pricing and LoRaWAN network-server support at expected device volumes
+  (~95 LoRaWAN sensors behind 3 gateway concentrators, per ADR001)
+  before finalizing — this is likely the largest variable cost driver.
   - Engineering Lead, Sep 2026
 
 ## Supporting Material

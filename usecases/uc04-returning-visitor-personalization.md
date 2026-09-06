@@ -45,16 +45,19 @@ in-park AI concierge experience.
    at checkout — no personalization logic involved yet.
 
 ## Main Flow — Phase Two (Future, AI-Assisted)
-1. Once sufficient ticketing/popularity history exists, a
-   recommendation model analyzes a visitor's prior visit pattern
-   (attractions visited, popularity trends per UC01) against the
-   current state of the estate.
+1. A returning visitor authenticates via OAuth/OIDC (ADR016), and once
+   sufficient ticketing/popularity history exists, a recommendation
+   model analyzes their prior visit pattern (attractions visited,
+   popularity trends per UC01) against the current state of the
+   estate.
 2. The visitor is offered a personalized itinerary suggestion or a
    targeted return offer (e.g. highlighting under-visited attractions,
    a discount timed to a quiet period).
 3. Visitor engagement with the recommendation is captured as feedback,
    feeding into ongoing model refinement (per the verification
    approach in ADR011).
+
+![UC04 data flow diagram showing Phase One's non-AI loyalty mechanism live at launch, and Phase Two's future AI-assisted flow from visitor authentication through popularity/ticketing history lookup, recommendation model, personalized offer, and engagement feedback looping back into model refinement](../assets/uc04-personalization-dataflow.svg)
 
 ### Why this data dependency matters
 
@@ -99,7 +102,7 @@ before being trusted at scale (ADR011).
   Phase One baseline.
 
 ## See Also
-- **[UC04 Test Approach](../test-approach-usecases/uc04-test-approach.md)**
+- **[UC04 Test Approach](uc04-test-approach.md)**
   — testing strategy for both phases, including offline
   precision@k/recall@k and click-through metrics for the future AI
   phase.

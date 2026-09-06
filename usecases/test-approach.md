@@ -1,5 +1,7 @@
 # Test Approach — Von Digitalis Estates
 
+![Test approach diagram showing two parallel tracks — a conventional test pyramid for deterministic components and a golden-set/drift/human-feedback verification stack for AI components — converging on a shared observability stack, plus cross-cutting non-functional tests and test ownership by role](../assets/test-approach-diagram.svg)
+
 ## 1. Testing Philosophy
 
 The solution has two fundamentally different kinds of components, and

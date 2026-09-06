@@ -16,10 +16,17 @@ procurement (see the advice notes in ADR013 and ADR009).
 ## Cost Categories
 
 ### 1. Hardware (one-time + replacement)
-- Zone gateway devices (~1 per ride/enclosure cluster, ADR001) — the
-  single largest hardware line item, but far cheaper than giving every
-  individual sensor its own cloud-connectivity hardware (Option 2 in
-  ADR001 was rejected specifically on cost grounds).
+- LoRaWAN sensor units (~95, one per ride/enclosure, ADR001/ADR003) —
+  the single largest hardware line item by unit count, but each unit is
+  cheaper than WiFi/cellular-connected hardware would be, and the
+  estate's IoT/hardware lead (Keerthi R) flagged volume pricing
+  (~$325/unit vs. $350-462 list) as worth negotiating with procurement
+  at this scale.
+- 3 LoRaWAN gateway concentrators (ADR001) — far cheaper in aggregate
+  than giving every individual zone its own WiFi-connected gateway
+  (Option 2 in ADR001 was rejected specifically on cost grounds); a
+  site RF survey is recommended before finalizing this count/layout, to
+  avoid discovering a coverage gap after the sensors are already bought.
 - Sensors (weight, motion, feeding-station triggers) — cheap,
   commodity-class hardware, reused across a species tier rather than
   bespoke per enclosure (ADR005).
@@ -52,9 +59,11 @@ procurement (see the advice notes in ADR013 and ADR009).
 
 ### 4. Engineering Effort (build cost)
 - Concentrated on the features that differentiate the estate (AI
-  monitoring, popularity analytics), not on well-solved problems
-  (ticketing, authentication) that were deliberately bought rather
-  than built (ADR009, ADR016).
+  monitoring, popularity analytics), not on well-solved problems.
+  Ticketing/payment is deliberately bought rather than built (ADR009);
+  authentication is implemented via standard OAuth/OIDC on
+  infrastructure the estate already pays for (ADR013), rather than
+  custom-built or tied to a second vendor (ADR016).
 - Phased rollout (see [Roll-Out Strategy](roll-out-strategy.md)) means
   engineering spend on animal monitoring is proven on 2-3 tiers before
   being committed across all 55 enclosures — avoiding a large upfront
@@ -73,7 +82,8 @@ procurement (see the advice notes in ADR013 and ADR009).
 
 | Decision | Cost avoided | ADR |
 |---|---|---|
-| Zone gateways instead of direct-to-cloud per sensor | Per-device cloud connectivity hardware and reliability logic at ~100+ endpoint scale | ADR001 |
+| LoRaWAN to 3 gateway concentrators instead of direct-to-cloud/WiFi per sensor | Per-device cloud connectivity hardware, cellular subscriptions, and reliability logic at ~95-endpoint scale | ADR001 |
+| RF survey before committing to gateway count/layout | Re-procurement or added gateways discovered only after ~95 sensors are already deployed | ADR001 |
 | Reuse ticketing infrastructure for popularity signal | A dedicated sensor network across all 95 locations | ADR003 |
 | Hourly/daily batch instead of streaming analytics | Streaming infrastructure that patchy WiFi would undermine anyway | ADR004 |
 | Species-tiered monitoring instead of bespoke-per-enclosure | Custom sensor/model builds for 55 individual enclosures | ADR005 |
@@ -82,7 +92,7 @@ procurement (see the advice notes in ADR013 and ADR009).
 | Buy ticketing SaaS instead of building | PCI compliance and payment-security engineering effort | ADR009 |
 | Model abstraction layer + open models where feasible | Full re-write cost if a commercial provider changes pricing or shuts down | ADR010 |
 | Single cloud provider, managed-first | Multi-cloud operational overhead not justified at current scale | ADR013 |
-| Delegate visitor/staff auth to existing platforms | Custom authentication build and its ongoing security liability | ADR016 |
+| OAuth/OIDC via the already-selected cloud platform for visitor + staff auth (not a second SaaS vendor) | Custom authentication build, and a second vendor dependency for identity on top of the ticketing SaaS | ADR013, ADR016 |
 | Shared observability stack (not a separate MLOps platform) | A second vendor relationship and toolset to maintain | ADR017, ADR020 |
 
 ## Cost vs. Risk Trade-offs Worth Tracking
@@ -90,10 +100,12 @@ procurement (see the advice notes in ADR013 and ADR009).
 A few decisions accept a higher ongoing cost in exchange for lower
 risk, and are worth monitoring as the estate scales:
 
-- **Per-device TLS certificates (ADR015)** cost more in provisioning
-  time than shared credentials, but the estate accepted this because
-  devices sit in a publicly accessible park — the security risk of the
-  cheaper option was judged not worth the savings.
+- **Per-device LoRaWAN session keys + per-gateway TLS certificates
+  (ADR015)** cost more in provisioning time than shared credentials, but
+  the estate accepted this because devices sit in a publicly accessible
+  park — the security risk of the cheaper option was judged not worth
+  the savings. Collapsing the cloud-facing tier to 3 gateway
+  certificates (ADR001) keeps this cost bounded despite ~95 sensors.
 - **Tiered backup strategy (ADR019)** spends more on payment/reference
   data recovery than on telemetry, deliberately, because losing a
   ticket record is a different order of cost than losing an hour of
@@ -110,4 +122,4 @@ before committing to the Phase 3 estate-wide expansion.
 ## Related Documents
 - [Roll-Out Strategy](roll-out-strategy.md)
 - [Architecture Characteristics](architecture-characteristics.md)
-- [ADR Summary — Final Decisions & Advice](spikes/adr-summary-decisions-and-advice.md)
+- [ADR Summary — Final Decisions & Advice](../adviceforum/adr-summary-decisions-and-advice.md)

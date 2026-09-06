@@ -7,6 +7,10 @@ Use an **off-the-shelf ticketing SaaS platform** (selected via standard
 procurement criteria: cost, API/webhook granularity, family-pass
 support) integrated via webhooks into a thin custom layer that feeds
 gate-scan events into the popularity-analytics pipeline (ADR003/ADR004).
+Scope is **payment and ticket issuance only** — visitor identity/login
+is handled separately via OAuth on the estate's own cloud platform
+(ADR016), linked to purchases by account ID rather than the ticketing
+vendor owning visitor identity.
 
 ## Context
 The estate needs visitors to be able to buy tickets, including family
@@ -59,3 +63,4 @@ architecture.
 ## Supporting Material
 * Spike 009: Ticketing & family pass architecture
 * ADR003: Visitor Popularity Tracking Method
+* ADR016: Visitor & Staff Authentication and Access Control

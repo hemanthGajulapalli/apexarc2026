@@ -64,6 +64,15 @@ Passive presence sensing deployed at all 95 locations.
   alone — revisit the zone list after the first season's ticket-gate
   data is in. - Operations Lead, Sep 2026
 
+* Consulted the estate's IoT/hardware lead (Keerthi R) on sensor
+  selection and pricing for the presence-sensing units: **LoRaWAN was
+  selected over WiFi/cellular** as the connectivity method (full
+  rationale, gateway layout, and pricing detail now recorded in
+  ADR001, since it applies to the sensor fleet estate-wide, not just
+  the BLE zones). - Operations Lead, Sep 2026
+
 ## Supporting Material
 * Spike 003: Popularity tracking method
+* ADR001: MQTT Ingestion Architecture for Patchy WiFi (sensor
+  connectivity: LoRaWAN, gateway layout, pricing)
 * ADR009: Ticketing & Family Pass Architecture

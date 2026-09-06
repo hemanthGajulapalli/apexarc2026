@@ -122,7 +122,7 @@ monitoring and ticketing paths:
   aggregation (privacy compliance, ADR018).
 
 ## See Also
-- **[UC01 Test Approach](../test-approach-usecases/uc01-test-approach.md)**
+- **[UC01 Test Approach](uc01-test-approach.md)**
   — traditional and AI-adjacent testing strategy and metrics for this
   use case.
 - **[Diagrams README](../assets/README-diagrams.md)** — full

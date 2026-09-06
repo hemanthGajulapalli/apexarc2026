@@ -10,14 +10,20 @@ individual ADR files for full context and rejected options.
 
 ### ADR001 — MQTT Ingestion Architecture for Patchy WiFi
 **Decision:** Zone-based MQTT gateway devices with local persistent
-queuing (store-and-forward); sensors publish to a local gateway, which
-buffers and forwards to the cloud when WiFi is available.
+queuing (store-and-forward); ~95 LoRaWAN sensors publish to one of 3
+LoRaWAN gateway concentrators (chosen over WiFi/cellular after
+consulting IoT/hardware lead Keerthi R), which buffer and forward to
+the cloud when backhaul is available.
 **Advice:**
 - Pilot the gateway approach in one ride zone and one enclosure cluster
   before estate-wide rollout — validate real-world dropout behavior, not
   just simulated.
-- Keep gateway firmware update mechanism simple; ~40-55 gateways is
+- Keep gateway firmware update mechanism simple; a fleet this size is
   still enough to make manual updates painful.
+- Run a site RF survey before committing to the 3-gateway layout, to
+  validate coverage ahead of procurement.
+- Negotiate volume pricing (~$325/unit vs. $350-462 list) with
+  procurement given the 95-unit deployment scale.
 
 ### ADR002 — Edge vs. Cloud Inference Strategy
 **Decision:** Hybrid — simple threshold-based alerting runs locally on
@@ -30,11 +36,14 @@ cloud on data delivered via store-and-forward.
 ### ADR003 — Visitor Popularity Tracking Method
 **Decision:** Ticket-gate/checkpoint scans as the primary signal
 (reusing ticketing infrastructure), supplemented by BLE presence sensing
-only in a small number of high-value zones.
+only in a small number of high-value zones. Sensor connectivity across
+the estate uses LoRaWAN (ADR001).
 **Advice:**
 - Choose initial BLE-equipped zones based on where staffing/investment
   decisions are currently hardest to make with gut feel alone; revisit
   after the first season's ticket-gate data.
+- Sensor selection/pricing was reviewed with IoT/hardware lead Keerthi
+  R — see ADR001 for the LoRaWAN, gateway-layout, and pricing detail.
 
 ### ADR004 — Real-Time vs. Batch Analytics Pipeline
 **Decision:** Hourly batch aggregation for staffing decisions, daily
@@ -84,6 +93,8 @@ inform it.
 ### ADR009 — Ticketing & Family Pass Architecture
 **Decision:** Off-the-shelf ticketing SaaS platform with a thin
 integration layer feeding scan events into the analytics pipeline.
+Scope is payment/issuance only — visitor identity is handled separately
+via OAuth (ADR016).
 **Advice:**
 - Evaluate 2-3 SaaS candidates specifically on webhook granularity (can
   we get a scan event per zone/attraction, not just per purchase?).
@@ -134,20 +145,26 @@ storage for media.
   without a clearly demonstrated need.
 
 ### ADR015 — IoT Device & MQTT Broker Security
-**Decision:** Per-device TLS client certificates with topic-level access
-control; no shared/global MQTT credentials.
+**Decision:** Two-tier security matching the LoRaWAN architecture
+(ADR001) — per-device LoRaWAN session keys for the ~95 sensors, plus
+per-gateway TLS client certificates and topic-level ACLs for the 3
+gateway concentrators; no shared/global credentials at either tier.
 **Advice:**
-- Build certificate provisioning into the existing device deployment/
-  installation process so it doesn't become a manual bottleneck at
-  100+ device scale.
+- Build both the LoRaWAN session-key provisioning step and the
+  (now much smaller, 3-gateway) TLS certificate step into the existing
+  device deployment/installation process.
 
 ### ADR016 — Visitor & Staff Authentication and Access Control
-**Decision:** Visitor auth/payment delegated to the ticketing SaaS
-platform; staff access via the cloud platform's managed identity/RBAC
+**Decision:** *Revised.* Visitor and staff identity both use OAuth
+2.0/OIDC on the cloud platform's managed identity service (ADR013) —
+not delegated to the ticketing SaaS. Ticketing (ADR009) handles
+payment/issuance only, linked by account ID. Staff access remains RBAC
 (Keeper, Operations, Admin roles).
 **Advice:**
 - Keep the staff role list minimal at launch; only add finer-grained
   roles if a real operational need emerges.
+- Build and test the OAuth account-linking layer to the ticketing
+  platform against real purchase flows before launch.
 
 ### ADR017 — Observability & Monitoring Infrastructure
 **Decision:** Single shared managed observability stack (logs, metrics,

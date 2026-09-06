@@ -40,6 +40,11 @@ gaps in health data).
 4. **Mesh networking between devices** — devices relay data to each other
    toward the nearest connected node, reducing dependency on any single
    WiFi access point.
+5. **LoRaWAN long-range radio to a small number of gateway
+   concentrators** — sensors use low-power, long-range LoRaWAN instead
+   of WiFi/cellular, transmitting to a handful of gateway concentrators
+   with their own backhaul, rather than every zone depending on local
+   WiFi.
 
 # Consequences
 
@@ -52,3 +57,19 @@ gaps in health data).
   animal enclosures, direct MQTT at ticket gates near the entrance)?
 - How does this decision affect the near-real-time vs. batch analytics
   question (spike 004)?
+
+# Outcome
+
+Option 2 (store-and-forward via gateway devices) was selected in ADR001,
+refined with option 5's radio technology: after consulting the estate's
+IoT/hardware lead (Keerthi R) on sensor selection and pricing, **LoRaWAN
+was chosen over WiFi/cellular alternatives** for the sensor-to-gateway
+link. This reduces the "needs reliable connectivity" problem to a small
+number (currently 3) of gateway concentrators rather than ~95
+individually WiFi-dependent zones.
+
+Open follow-ups before procurement:
+- A **site RF survey** is recommended to validate coverage assumptions
+  ahead of committing to the 3-gateway layout.
+- **Volume pricing** (~$325/unit vs. $350-462 list) was flagged to
+  procurement as worth negotiating given the 95-unit deployment scale.

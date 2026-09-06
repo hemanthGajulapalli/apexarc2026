@@ -10,7 +10,7 @@ a direct response to one of the judging criteria: *do the
 architectural characteristics of the additions match the existing
 architecture?*
 
-![Architectural characteristics comparison table showing base system priority vs. AI addition alignment across Reliability, Availability, Cost Efficiency, Auditability, Elasticity, and Adaptability](assets/existing-architectural-characteristics.svg)
+![Architectural characteristics comparison table showing base system priority vs. AI addition alignment across Reliability, Availability, Cost Efficiency, Auditability, Elasticity, and Adaptability](../assets/existing-architectural-characteristics.svg)
 
 ## Priority Ranking
 
@@ -54,8 +54,11 @@ constraint applies to every component, AI or not.
 means the most time-critical AI feature (animal-health threshold
 alerting) works identically whether a zone is connected or not. This
 is a direct extension of the same store-and-forward design used for
-non-AI ingestion (ADR001) — the AI layer didn't get a weaker
-availability bar than the rest of the system.
+non-AI ingestion (ADR001) — now implemented over LoRaWAN to a small
+number of gateway concentrators rather than per-zone WiFi, which
+narrows the estate's patchy-WiFi exposure to just those gateways
+instead of every zone — the AI layer didn't get a weaker availability
+bar than the rest of the system.
 
 ### Cost Efficiency
 **Base system priority:** High — explicitly stated in the brief as an
