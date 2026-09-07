@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ops Dashboard</title>
+<link rel="stylesheet" href="/shared/design-system.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="/index.html"><span class="brand-glyph" style="background:linear-gradient(135deg,var(--primary),var(--primary-deep));"></span> Ops Dashboard — Von Digitalis Estates</a>
+  <div class="topbar-meta"><span class="badge" id="who-badge">…</span></div>
+</div>
+
+<div class="page" id="overview-view">
+  <div class="region">
+    <div class="region-label">Zone popularity — last hour, ranked</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Live ticket-scan + BLE counts, aggregated hourly (ADR004). Click a zone to drill in.</p>
+    <div id="zone-list"></div>
+  </div>
+  <div style="display:flex; gap:12px;">
+    <button class="btn primary" id="review-decisions-btn">Review decisions →</button>
+  </div>
+</div>
+
+<div class="page" id="zone-view" style="display:none;">
+  <div class="breadcrumb"><a href="#" id="back-to-overview">Estate Overview</a> / <span id="zone-title"></span></div>
+  <div class="region">
+    <div class="region-label">Hourly counts — last 24h</div>
+    <div id="zone-series"></div>
+  </div>
+  <button class="btn" id="zone-back-btn">← Back</button>
+</div>
+
+<div class="page" id="decisions-view" style="display:none;">
+  <div class="breadcrumb"><a href="#" id="back-to-overview-2">Estate Overview</a> / Decision Panel</div>
+  <div class="region label-ai">
+    <div class="region-label">Recommendations — pending your approval (ADR007/ADR021)</div>
+    <div id="rec-list"></div>
+  </div>
+  <button class="btn" id="dec-back-btn">← Back</button>
+</div>
+
+<div id="approve-modal" class="overlay">
+  <div class="modal-card">
+    <div class="region-label">Approve recommendation</div>
+    <p id="approve-text"></p>
+    <div class="field"><label>Note (required)</label><textarea id="approve-note" rows="2"></textarea></div>
+    <div class="field error-text" id="approve-error" style="display:none;"></div>
+    <div style="display:flex; gap:10px; margin-top:14px;">
+      <button class="btn primary" id="approve-confirm">Approve</button>
+      <button class="btn" id="approve-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { api, toast, requireRole, escapeHtml, onClickBusy, skeletonRows, emptyState, ensureDemoSession } from '/shared/api.js';
+
+await ensureDemoSession();
+const user = requireRole('operations');
+if (user) {
+  document.getElementById('who-badge').textContent = `Role: Operations — ${user.displayName}`;
+  loadOverview();
+  document.getElementById('review-decisions-btn').addEventListener('click', showDecisions);
+  document.getElementById('back-to-overview').addEventListener('click', (e) => { e.preventDefault(); showOverview(); });
+  document.getElementById('back-to-overview-2').addEventListener('click', (e) => { e.preventDefault(); showOverview(); });
+  document.getElementById('zone-back-btn').addEventListener('click', showOverview);
+  document.getElementById('dec-back-btn').addEventListener('click', showOverview);
+}
+
+function showOverview() {
+  document.getElementById('overview-view').style.display = '';
+  document.getElementById('zone-view').style.display = 'none';
+  document.getElementById('decisions-view').style.display = 'none';
+  loadOverview();
+}
+
+async function loadOverview() {
+  const list = document.getElementById('zone-list');
+  skeletonRows(list, 4, 50);
+  const zones = await api('GET', '/popularity/zones');
+  if (!zones.length) return emptyState(list, 'No zone data yet.');
+  list.innerHTML = zones.map((z, i) => `
+    <div class="row" style="cursor:pointer;" data-id="${z.id}">
+      <span style="min-width:26px; height:26px; border-radius:50%; background:#EFF3FB; color:var(--primary-deep); display:grid; place-items:center; font-weight:700; font-size:12px;">${i + 1}</span>
+      <span style="font-weight:600; min-width:180px;">${escapeHtml(z.name)}</span>
+      <span style="color:var(--muted); font-size:13px;">${z.latest_hour_count} scans/hr</span>
+      ${z.ble_equipped ? '<span class="badge badge-blue">BLE</span>' : ''}
+    </div>
+  `).join('');
+  list.querySelectorAll('.row').forEach((row) => row.addEventListener('click', () => openZone(row.dataset.id)));
+}
+
+async function openZone(id) {
+  document.getElementById('overview-view').style.display = 'none';
+  document.getElementById('zone-view').style.display = '';
+  const detail = await api('GET', `/popularity/zones/${id}`);
+  document.getElementById('zone-title').textContent = detail.zone.name;
+  const el = document.getElementById('zone-series');
+  if (!detail.hourly.length) {
+    emptyState(el, 'No hourly aggregates recorded for this zone yet. Trigger POST /api/popularity/aggregate to generate one.');
+  } else {
+    el.innerHTML = detail.hourly.map((h) => `
+      <div class="row"><span style="font-family:var(--mono); min-width:170px;">${new Date(h.hour_bucket).toLocaleString()}</span><span style="font-weight:700;">${h.event_count}</span></div>
+    `).join('');
+  }
+}
+
+async function showDecisions() {
+  document.getElementById('overview-view').style.display = 'none';
+  document.getElementById('decisions-view').style.display = '';
+  await loadRecommendations();
+}
+
+async function loadRecommendations() {
+  const list = document.getElementById('rec-list');
+  skeletonRows(list, 3, 70);
+  const recs = await api('GET', '/popularity/recommendations');
+  if (!recs.length) return emptyState(list, 'No recommendations right now.');
+  list.innerHTML = recs.map((r) => `
+    <div class="row ${r.status === 'blocked' ? 'critical' : r.status === 'approved' ? 'ok' : ''}">
+      <div style="flex:1; min-width:260px;">
+        <div style="font-weight:700;">${escapeHtml(r.title)}</div>
+        <div style="color:var(--muted); font-size:12.5px; margin-top:4px;">${escapeHtml(r.rationale)} · confidence ${Math.round(r.confidence * 100)}% · ${escapeHtml(r.zone_name)}</div>
+        ${r.status === 'blocked' ? `<div style="color:var(--danger); font-size:12px; margin-top:4px; font-weight:600;">Blocked: ${escapeHtml(r.blocked_reason)}</div>` : ''}
+      </div>
+      ${r.status === 'pending' ? `<button class="btn primary approve-btn" data-id="${r.id}" data-title="${escapeHtml(r.title)}">Approve</button>` : `<span class="badge ${r.status === 'approved' ? 'ok' : 'danger'}">${r.status}</span>`}
+    </div>
+  `).join('');
+  list.querySelectorAll('.approve-btn').forEach((btn) => btn.addEventListener('click', () => openApprove(btn.dataset.id, btn.dataset.title)));
+}
+
+let pendingRecId = null;
+function openApprove(id, title) {
+  pendingRecId = id;
+  document.getElementById('approve-text').textContent = `Approve "${title}"?`;
+  document.getElementById('approve-modal').classList.add('open');
+}
+document.getElementById('approve-cancel').addEventListener('click', () => document.getElementById('approve-modal').classList.remove('open'));
+onClickBusy(document.getElementById('approve-confirm'), 'Approving…', async () => {
+  const note = document.getElementById('approve-note').value.trim();
+  const errEl = document.getElementById('approve-error');
+  if (!note) { errEl.textContent = 'An approval note is required (ADR007).'; errEl.style.display = ''; return; }
+  errEl.style.display = 'none';
+  await api('POST', `/popularity/recommendations/${pendingRecId}/approve`, { note });
+  document.getElementById('approve-modal').classList.remove('open');
+  document.getElementById('approve-note').value = '';
+  toast('Recommendation approved.');
+  await loadRecommendations();
+});
+</script>
+</body>
+</html>

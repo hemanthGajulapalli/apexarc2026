@@ -1,0 +1,298 @@
+================================================================================
+VON DIGITALIS ESTATES — REQUIREMENTS SPECIFICATION
+================================================================================
+Source: business-requirements/von-digitalis-kata.md (the kata brief),
+usecases/uc01-uc04, and the ADRs that turned each requirement into a decision.
+This file is the single consolidated, numbered list; it does not replace the
+source documents — each requirement below cites where the full reasoning
+lives. "Implementation status" cites implementation/ where real, running
+code exists, or states plainly that it does not yet.
+
+Legend: [BUILT] real, tested code exists · [PARTIAL] some of it exists ·
+[NOT BUILT] explicitly not implemented, not silently skipped.
+
+--------------------------------------------------------------------------------
+1. CONSTRAINTS (non-negotiable, from the kata brief)
+--------------------------------------------------------------------------------
+C-01  WiFi coverage across the park is patchy.
+        -> ADR001 (LoRaWAN zone gateways, store-and-forward)
+C-02  Any cloud usage needs an explicit estate-to-cloud data mechanism.
+        -> ADR001, ADR012
+C-03  Budget exists for MQTT-capable hardware, deployable estate-wide.
+        -> ADR001 (3 gateway concentrators for ~95 zone sensors)
+C-04  Estate scale: 40 rides.
+C-05  Estate scale: 200+ animals across 55 displays/enclosures.
+C-06  Traffic: ~5,000 visitors/day now, 15,000/day target within 3 years.
+        -> drives NFR-05 (Elasticity)
+
+--------------------------------------------------------------------------------
+2. FUNCTIONAL REQUIREMENTS
+--------------------------------------------------------------------------------
+
+-- Ticketing & Visitor Identity --------------------------------------------
+
+FR-01  The system shall let visitors purchase tickets, including family
+       passes covering multiple people.
+       Use case: UC01 (trigger) · ADR: ADR009
+       Status: [BUILT] POST /api/ticketing/purchase — real pricing incl.
+       add-ons + promo codes, implementation/server/test/identityAndTicketing.test.js
+
+FR-02  The system shall attribute each individual entry within a family
+       pass to its own zone, so group purchases don't understate a zone's
+       popularity.
+       Use case: UC01 (alt flow)
+       Status: [PARTIAL] schema supports it (ticket_entries table); not
+       surfaced in any UI yet.
+
+FR-03  The system shall authenticate visitors via a standards-based
+       identity mechanism, decoupled from the ticketing payment vendor.
+       ADR: ADR016
+       Status: [BUILT, STAND-IN] real signin/session flow exists and is
+       enforced; the identity mechanism itself is a documented stand-in for
+       real OAuth/OIDC — see implementation/server/src/middleware/auth.js.
+
+-- Popularity Analytics (UC01) ----------------------------------------------
+
+FR-04  The system shall record a popularity signal (ticket scan, and BLE
+       presence in a small set of high-value zones) for every ride and
+       enclosure.
+       ADR: ADR003
+       Status: [BUILT] POST /api/ingestion/popularity-events, real 422
+       rejection for a BLE event on a non-BLE-equipped zone.
+
+FR-05  The system shall aggregate popularity hourly (same-day staffing) and
+       daily (investment trend).
+       ADR: ADR004
+       Status: [BUILT] real rollupHourly/rollupDaily, real DB tables.
+
+FR-06  The system shall surface ranked zone popularity to operations staff.
+       Status: [BUILT] Ops Dashboard, GET /api/popularity/zones.
+
+FR-07  The system shall forecast near-term demand per zone and generate
+       staff-deployment and investment recommendations from it.
+       ADR: ADR021 (added after this was found running in a wireframe with
+       no ADR behind it)
+       Status: [BUILT] naive same-hour-last-week baseline forecast (a
+       documented stand-in for a trained model — ADR021's own advice says
+       any real model must beat this baseline before being trusted).
+
+FR-08  Every staffing/investment recommendation shall require an
+       attributed human approval with a note before being considered
+       committed; a recommendation blocked on stale data shall not be
+       approvable regardless of note.
+       ADR: ADR007, ADR021
+       Status: [BUILT] server-enforced 400/409, not just UI convention —
+       see implementation/server/test/popularityAnalytics.test.js.
+
+-- Animal Health & Feeding (UC02) -------------------------------------------
+
+FR-09  The system shall monitor animal health/feeding via species-tiered
+       baselines (mammal, reptile/land, aquatic).
+       ADR: ADR005
+       Status: [BUILT] enclosures.species_tier, seeded per-tier examples.
+
+FR-10  The system shall raise an urgent local alert from simple threshold
+       rules even when a zone is offline, independent of any model.
+       ADR: ADR002
+       Status: [BUILT] origin=edge_threshold path, always critical/notified.
+
+FR-11  The system shall tier cloud-model-originated alerts by confidence:
+       high confidence notifies staff, low confidence logs only.
+       ADR: ADR007
+       Status: [BUILT] alertTiering.js, unit-tested in isolation.
+
+FR-12  Keepers shall be able to log feeding amount and behavior notes per
+       enclosure as a first-class input alongside sensor data.
+       ADR: ADR005
+       Status: [BUILT] POST /api/animal-health/feeding-logs.
+
+FR-13  Every notified alert shall require an attributed keeper
+       confirm-or-dismiss decision with a note before any follow-up action;
+       an alert already labeled shall not be relabeled.
+       ADR: ADR007
+       Status: [BUILT] this exact requirement was found MISSING for the
+       primary health/feeding alert path during a wireframe audit (only
+       the population-review screen had it) and was fixed directly in the
+       API — see implementation/docs/test-strategy.md.
+
+FR-14  A treatment recommendation shall only be proposable once its alert
+       is confirmed, and shall itself require an approval note.
+       ADR: ADR007
+       Status: [BUILT] 409 if the alert isn't confirmed yet.
+
+-- Piranha Population Counting (UC03) ---------------------------------------
+
+FR-15  The system shall estimate the piranha population from a
+       periodically keeper-captured photo/video via a vision model,
+       compared against running history.
+       ADR: ADR006
+       Status: [BUILT for the API/DB layer] POST /api/animal-health/
+       population/:zoneId/capture stores the estimate; the vision model
+       itself is out of scope (count/confidence are supplied inputs, as a
+       real inference service would supply them).
+
+FR-16  A meaningful population decline shall route through the same
+       tiered confirm/dismiss guardrail as animal-health alerts, requiring
+       a keeper note; a reviewed capture shall not be re-reviewed.
+       ADR: ADR006, ADR007
+       Status: [BUILT] POST /api/animal-health/population/:id/review.
+
+FR-17  Captured photo/video media shall be stored in object storage,
+       referenced (not embedded) from the population-count record.
+       ADR: ADR014
+       Status: [NOT BUILT] schema seam only (capture_object_key column);
+       no real upload endpoint exists yet.
+
+-- Returning Visitor Growth (UC04) ------------------------------------------
+
+FR-18  The system shall enroll a purchasing visitor in a simple,
+       non-AI loyalty mechanism, applied automatically on return, live at
+       launch.
+       ADR: ADR008
+       Status: [BUILT] loyalty_accounts, GET /api/ticketing/loyalty.
+
+FR-19  The system shall, once real ticketing/popularity history exists
+       (not before), offer grounded personalized recommendations and an
+       in-park concierge assistant — never open-ended generation, always
+       citing its grounding source and a confidence score.
+       ADR: ADR022 (added after this was found running in a wireframe with
+       no ADR behind it), gated by ADR008's data-maturity trigger
+       Status: [BUILT] GET /api/personalization/offers, POST /api/
+       concierge/ask — both query real ticket-entry/popularity rows for
+       grounding; an ungrounded question gets a low-confidence deflection.
+
+FR-20  Personalization shall be opt-out (default on), never persisting
+       individual-level location data beyond aggregation; opting out shall
+       fall back to the Phase One loyalty mechanism only.
+       ADR: ADR018
+       Status: [BUILT] PATCH /api/ticketing/loyalty/consent — a real 403
+       gate, not just an empty result list, when off.
+
+-- Identity, Access & AI Governance (cross-cutting) --------------------------
+
+FR-21  Staff shall authenticate via the same identity mechanism as
+       visitors, with role-based access control limited to Keeper,
+       Operations, and Admin.
+       ADR: ADR016
+       Status: [BUILT] every staff-only endpoint enforces this; a
+       non-Keeper cannot resolve animal alerts, a non-Admin cannot reach
+       the AI Governance Console, etc. — see test suites per module.
+
+FR-22  Admin users shall be able to view and manage staff role
+       assignments.
+       ADR: ADR016
+       Status: [BUILT] GET/POST /api/staff.
+
+FR-23  No AI model shall reach production status without passing a
+       golden-set regression suite; a failing result shall block
+       deployment outright.
+       ADR: ADR011, ADR020
+       Status: [BUILT] POST /api/ai-governance/models/:id/promote — a
+       real, tested 409 rejection, not advisory.
+
+FR-24  A blocked deployment shall be overridable only via an explicit,
+       non-empty, attributed justification, logged as a failing result —
+       never disguised as a clean pass.
+       ADR: ADR020
+       Status: [BUILT] POST /api/ai-governance/models/:id/override,
+       verified end-to-end by a real browser test (implementation/server/
+       e2e/smoke.mjs) including survival across a hard page reload.
+
+FR-25  Every AI model's deploy history and per-category golden-set
+       breakdown shall be reviewable before a promote/override decision is
+       made, not just a pass/fail badge.
+       ADR: ADR011
+       Status: [BUILT] AI Governance Console model-detail screen, real
+       per-category data in golden_set_category_results.
+
+--------------------------------------------------------------------------------
+3. NON-FUNCTIONAL REQUIREMENTS
+--------------------------------------------------------------------------------
+Priority order below matches the project's own stated architectural
+characteristics priority (other_design_docs/architecture-characteristics.md):
+Reliability > Availability > Cost Efficiency > Auditability > Elasticity >
+Adaptability.
+
+NFR-01  RELIABILITY — the system shall not lose data during a connectivity
+        outage; buffered events shall be delivered once connectivity
+        resumes, distinguishably marked as delayed.
+        ADR: ADR001 · Status: [BUILT] popularity_events.buffered,
+        sensor_readings.buffered.
+
+NFR-02  AVAILABILITY — urgent animal-welfare alerting shall function even
+        when a zone's connectivity is down.
+        ADR: ADR002 · Status: [BUILT] edge-threshold path.
+
+NFR-03  COST EFFICIENCY — every architectural decision shall prefer the
+        lower-cost "good enough" option over the most sophisticated
+        available one (LoRaWAN over WiFi-per-zone, batch over streaming,
+        off-the-shelf ticketing over custom-built).
+        See: other_design_docs/cost-analysis.md · Status: reflected
+        throughout ADR001/004/009's own trade-off sections.
+
+NFR-04  AUDITABILITY — every consequential AI-adjacent decision (alert
+        resolution, recommendation approval, model deploy/override) shall
+        be attributed to a specific user, timestamped, and reviewable.
+        ADR: ADR011, ADR020 · Status: [BUILT] resolved_by/approved_by/
+        promoted_by columns throughout the schema; audit_log table for
+        cross-service reporting.
+
+NFR-05  ELASTICITY — the system shall be designed to scale from ~5,000 to
+        15,000 visitors/day over 3 years without an architecture rewrite.
+        Status: [NOT BUILT / NOT ASSESSED] no load test has been run
+        against this target; service-router boundaries are drawn so a
+        future split into independent processes doesn't require a
+        rewrite (implementation/docs/module-service-map.md), but this is
+        an untested design property, not a verified one.
+
+NFR-06  ADAPTABILITY — AI model/provider choice shall be swappable behind
+        a thin abstraction, preferring open/self-hostable models for
+        lower-stakes tasks.
+        ADR: ADR010 · Status: [NOT BUILT] named as a decision; no real
+        multi-provider abstraction exists in implementation/ yet.
+
+NFR-07  PRIVACY — individual visitor location/identity data shall never
+        persist beyond aggregation; BLE identifiers shall be discarded
+        immediately after counting.
+        ADR: ADR018 · Status: [BUILT] schema stores only aggregate counts
+        and opt-in flags, never raw BLE device identifiers.
+
+NFR-08  SECURITY — IoT devices and gateways shall authenticate without any
+        shared/global credential; visitor and staff data access shall be
+        RBAC-scoped.
+        ADR: ADR015, ADR016 · Status: [NOT BUILT for ADR015] per-device
+        LoRaWAN keys/gateway TLS certs are a hardware-provisioning
+        decision with no real device fleet yet; [BUILT for ADR016] RBAC
+        is enforced in real, tested code.
+
+NFR-09  HUMAN-IN-THE-LOOP SAFETY — no AI output shall trigger an automated
+        welfare or business action without an explicit human confirmation.
+        ADR: ADR007 · Status: [BUILT] this is the single most-tested
+        property in the whole system — see every *.test.js file for a
+        rejection-path assertion, not just a happy-path one.
+
+NFR-10  DISASTER RECOVERY — backup/restore strategy shall be tiered by
+        data criticality (payments, reference data, telemetry).
+        ADR: ADR019 · Status: [NOT BUILT] decision recorded; no restore
+        drill has been run.
+
+NFR-11  OBSERVABILITY — logs/metrics/traces shall share one stack with
+        correlation IDs from day one.
+        ADR: ADR017 · Status: [NOT BUILT] explicitly named as a gap in
+        implementation/docs/production-readiness-report.md — ADR017's own
+        advice warns this is harder to retrofit later, so it should be
+        prioritized early in the next build phase, not deferred casually.
+
+--------------------------------------------------------------------------------
+4. TRACEABILITY
+--------------------------------------------------------------------------------
+Every requirement above cites the ADR that turned it into an architectural
+decision (full trade-off analysis in ADRs/adrNNN-*.md) and, where
+applicable, the use case that motivated it (usecases/ucNN-*.md). For a
+narrower, curated view of any one area, see the project's Claude Code
+skills (.claude/skills/) — one per use case, plus platform-foundations,
+ai-governance-verification, and overall-architecture-and-solution.
+
+This file should be updated whenever a requirement's implementation status
+changes — it is meant to stay a living, accurate map, not a point-in-time
+snapshot that quietly goes stale.

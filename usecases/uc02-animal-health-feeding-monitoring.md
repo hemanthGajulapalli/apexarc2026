@@ -88,11 +88,15 @@ action on its own.
 
 ### Where this shows up for staff
 
-Flagged alerts land directly in the same operations dashboard used for
-popularity data — keepers don't need a separate tool to see what needs
-attention.
+Flagged alerts land in the **Vet Console**, a Keeper-scoped app on the
+same platform as the Ops Dashboard — separate per ADR016's RBAC split
+(Keeper / Operations / Admin), rather than a shared screen everyone
+sees. A keeper doesn't need a separate estate-wide dashboard to do
+their job; they get an enclosure-focused alert feed instead. The
+screenshot below is the actual Vet Console wireframe
+(`wireframes/vet-console-wireframe.html`), not a static mockup.
 
-![Operations dashboard mockup with an animal health alerts panel showing high- and low-confidence flags per enclosure](../assets/admin-dashboard.svg)
+![Vet Console alert feed screenshot showing tiered animal health alerts (critical/warn/info) with confidence, grounding, and a Triage action per row, a blocked stale-data row, and a separate population-monitoring section routing to the same confirm/dismiss pattern](../assets/vet-console-alert-feed.png)
 
 ## AI Involvement
 Tier-specific anomaly-detection models (cloud-side) analyze sensor and

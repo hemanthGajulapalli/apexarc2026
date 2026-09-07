@@ -1,0 +1,26 @@
+# Von Digitalis Estates — Python dependencies for deployment/ops tooling.
+#
+# The application itself is Node.js (see implementation/server/package.json)
+# — nothing here runs the app. This file is for Python-based deployment,
+# migration, backup, and health-check scripting around it (ADR019, ADR020).
+# Install into a virtualenv: python3 -m venv .venv && source .venv/bin/activate
+# && pip install -r requirements.txt
+
+# --- Database ops (ADR014 relational store, ADR019 backup/restore) ---------
+psycopg2-binary>=2.9,<3.0     # apply schema.sql/seed.sql, run PITR restore drills
+
+# --- Deployment / health-check scripting (ADR020 CI/CD pipeline) -----------
+requests>=2.31,<3.0           # smoke-test the deployed API (GET /api/health, etc.)
+click>=8.1,<9.0                # CLI scaffolding for deploy/backup/restore scripts
+python-dotenv>=1.0,<2.0        # load environment config (DB host/port, API URLs) from .env
+PyYAML>=6.0,<7.0                # parse infrastructure/config YAML
+
+# --- Cloud provider SDK ------------------------------------------------------
+# ADR013 selects "a single mainstream public cloud provider" but does not
+# name one — add the matching SDK once that choice is made, e.g.:
+#   boto3>=1.34,<2.0            # AWS
+#   google-cloud-storage>=2.16   # GCP
+#   azure-storage-blob>=12.19    # Azure
+
+# --- Testing (optional, if deployment scripts get their own test suite) ----
+pytest>=8.0,<9.0

@@ -175,17 +175,40 @@ recorded across the relevant ADRs.
 
 ---
 
-## admin-dashboard.svg
-**Operations Dashboard Mockup**
+## ops-dashboard-overview.png / ops-dashboard-decision-panel.png
+**Operations Dashboard — Screenshots**
 
-A mockup of what estate operations staff would actually see day to
-day: top-line KPIs (visitors today, open animal alerts, busiest zone,
-LoRaWAN gateways offline out of 3), a zone-popularity chart, a live
-animal-health-alerts panel, and a 7-day investment-priority table with
-trend and recommendation columns. Illustrates how UC01 and UC02's
-outputs surface to a human decision-maker.
+Real screenshots of the working Ops Dashboard wireframe
+(`wireframes/ops-dashboard-wireframe.html`), not a static mockup —
+superseding the retired `admin-dashboard.svg`. **Overview** shows
+top-line KPIs (forecast, live count, forecast accuracy/MAPE, peak-hour
+prediction — ADR021), a 24h live-vs-forecast popularity chart, ranked
+hot zones, and an edge/drift/guardrail status strip. **Decision Panel**
+shows staff-deploy and investment recommendations with impact, cost,
+and confidence — one escalated to manual review, one blocked by stale
+zone data — each requiring an explicit, audited human approval before
+being committed (ADR007, ADR021). Animal health alerts are
+deliberately **not** shown here — see `vet-console-alert-feed.png`
+below.
 
-**Related:** UC01, UC02, ADR001, ADR003, ADR004, ADR007
+**Related:** UC01, ADR001, ADR003, ADR004, ADR007, ADR021
+
+---
+
+## vet-console-alert-feed.png
+**Vet Console — Alert Feed Screenshot**
+
+A real screenshot of the Vet Console wireframe
+(`wireframes/vet-console-wireframe.html`). This is the Keeper-scoped
+app RBAC (ADR016) actually routes animal-health and feeding alerts to
+— a separate app from the Ops Dashboard, not a shared panel on it.
+Shows tiered severity (critical/warn/info) with confidence and
+grounding per alert, a stale-data-blocked row (ADR001), and the
+Population Monitoring section that routes piranha count reviews
+through the same confirm/dismiss pattern (ADR006, ADR007).
+
+**Related:** UC02, UC03, ADR001, ADR002, ADR005, ADR006, ADR007,
+ADR016
 
 ---
 
@@ -279,9 +302,10 @@ ADR012, ADR013, ADR014, ADR016, ADR017, ADR020
 
 | Use Case | Diagrams |
 |---|---|
-| UC01 — Popularity Analytics | uc01-popularity-analytics-dataflow, admin-dashboard, high-level-flow-diagram, demand-chart |
-| UC02 — Animal Health & Feeding Monitoring | uc02-animal-monitoring-dataflow, uc02-animal-monitoring-c3, admin-dashboard, ai-guardrails-verification, high-level-flow-diagram, demand-chart |
-| UC03 — Piranha Population Counting | uc03-piranha-population-dataflow, high-level-flow-diagram, demand-chart |
+| UC01 — Popularity Analytics | uc01-popularity-analytics-dataflow, ops-dashboard-overview, ops-dashboard-decision-panel, high-level-flow-diagram, demand-chart |
+| UC02 — Animal Health & Feeding Monitoring | uc02-animal-monitoring-dataflow, uc02-animal-monitoring-c3, vet-console-alert-feed, ai-guardrails-verification, high-level-flow-diagram, demand-chart |
+| UC03 — Piranha Population Counting | uc03-piranha-population-dataflow, vet-console-alert-feed, high-level-flow-diagram, demand-chart |
 | UC04 — Returning Visitor Personalization | uc04-personalization-dataflow, rollout-strategy, demand-chart |
 | Whole system | use-cases-overview, app-stack, c2-container-diagram, ai-ml-app-stack, existing-architectural-characteristics, rollout-strategy |
 | Testing & Verification | test-approach-diagram, ai-guardrails-verification |
+| Working wireframes (real screenshots, not mockups) | `../wireframes/landing-page-wireframe.html` — Ops Dashboard, Vet Console, AI Governance Console, Customer App; see `ops-dashboard-overview.png`, `ops-dashboard-decision-panel.png`, `vet-console-alert-feed.png` above |

@@ -96,6 +96,8 @@ We prioritized four use cases for this exercise, in the order the [Roadmap](#roa
 
 ![Four cards showing the prioritized how-might-we questions for UC01 Visitor Popularity Analytics, UC02 Animal Health and Feeding Monitoring, UC03 Jumping Piranha Population Counting, and UC04 Returning Visitor Personalization](assets/use-cases-overview.svg)
 
+**Working wireframes:** every diagram below is backed by a real, clickable prototype, not just static mockups — [`wireframes/landing-page-wireframe.html`](wireframes/landing-page-wireframe.html) is the entry point, linking into all four role-scoped apps (Ops Dashboard, Vet Console, AI Governance Console, Customer App) and their 16 screens.
+
 ## Architecture Characteristics
 
 Refer to the [detailed architectural characteristics analysis](other_design_docs/architecture-characteristics.md) for the full reasoning behind each priority and where the AI additions deliberately match, extend, or raise the bar set by the base (pre-AI) system.
@@ -124,15 +126,18 @@ Refer to [**UC01 detailed design**](usecases/uc01-visitor-popularity-analytics.m
 - **Targeted BLE presence sensing** in a small number of high-value zones adds dwell-time data where it's worth the extra privacy surface, rather than deploying it estate-wide.
 - **LoRaWAN sensor connectivity** ([**ADR001**](ADRs/adr001-mqtt-ingestion-architecture.md)) — chosen over WiFi/cellular after consulting the estate's IoT/hardware lead, routing ~95 sensors through 3 gateway concentrators instead of depending on patchy WiFi at every zone.
 - **Hourly and daily batch aggregation** ([**ADR004**](ADRs/adr004-realtime-vs-batch-analytics.md)) — hourly for same-day staffing, daily for longer-term investment trend, with no dedicated streaming infrastructure.
+- **Same-day forecasting + staff/investment recommendations** ([**ADR021**](ADRs/adr021-popularity-forecasting-recommendations.md)) — built on top of ADR004's existing batch aggregates (no streaming needed), with every recommendation gated behind mandatory human approval, extending ADR007's pattern from animal welfare to operational/financial decisions.
 - **Data minimization by default** ([**ADR018**](ADRs/adr018-visitor-data-privacy-governance.md)) — BLE identifiers are discarded immediately after aggregation into zone counts.
 
 **Data flow:**
 
 ![Popularity analytics data flow: ticket-gate scans and BLE presence counts flow through a gateway concentrator into the ingestion service, land in the time-series database, and are aggregated hourly and daily before reaching the operations dashboard](assets/uc01-popularity-analytics-dataflow.svg)
 
-**Operations dashboard:**
+**Operations dashboard** (real screenshots of the working wireframe, `wireframes/ops-dashboard-wireframe.html`):
 
-![Operations dashboard mockup showing visitor KPIs, a zone-popularity chart, animal health alerts, and a 7-day investment-priority table with trend and recommendation columns](assets/admin-dashboard.svg)
+![Ops Dashboard Estate Overview screenshot showing forecast/live/MAPE/peak-hour KPIs, a 24-hour live-vs-forecast popularity chart, and ranked hot zones](assets/ops-dashboard-overview.png)
+
+![Ops Dashboard Decision Panel screenshot showing staff-deploy recommendations with impact, cost, and confidence, each requiring explicit human approval before being committed (ADR021)](assets/ops-dashboard-decision-panel.png)
 
 ### UC02 — Animal Health & Feeding Monitoring
 **How might we catch early signs of illness or feeding problems across 55 enclosures, without watching every one continuously?**
@@ -144,10 +149,15 @@ Refer to [**UC02 detailed design**](usecases/uc02-animal-health-feeding-monitori
 - **Two-speed edge/cloud inference** ([**ADR002**](ADRs/adr002-edge-vs-cloud-inference.md)) — simple local threshold alerting on the gateway works even while a zone is offline; the richer, cloud-side anomaly model runs once connectivity allows.
 - **Tiered alert severity with mandatory human confirmation** ([**ADR007**](ADRs/adr007-alert-validation-false-positive-tolerance.md)) — a keeper always confirms or dismisses before any action is taken, and that label feeds back into model tuning.
 - **Verification wrapped around every output** ([**ADR011**](ADRs/adr011-verification-nondeterministic-outputs.md)) — this is the solution's most AI-dependent use case, and the one with the most explicit guardrails.
+- **A Keeper-scoped console, not a shared dashboard** ([**ADR016**](ADRs/adr016-visitor-staff-authentication-access-control.md)) — alerts land in a separate Vet Console, RBAC-scoped to the Keeper role, rather than the estate-wide Ops Dashboard operations staff use for UC01.
 
 **Data flow:**
 
 ![Animal health and feeding monitoring data flow: sensor and keeper data flow through local gateway thresholds for urgent conditions and through cloud anomaly detection for standard analysis, with keeper confirmation before any alert is acted on](assets/uc02-animal-monitoring-dataflow.svg)
+
+**Where this shows up for staff** (real screenshot of `wireframes/vet-console-wireframe.html`):
+
+![Vet Console alert feed screenshot showing tiered animal health alerts (critical/warn/info) with confidence, grounding, and a Triage action per row, a blocked stale-data row, and a population-monitoring section](assets/vet-console-alert-feed.png)
 
 **Guardrails:**
 
@@ -178,7 +188,7 @@ Refer to [**UC04 detailed design**](usecases/uc04-returning-visitor-personalizat
 
 **Solution approach:**
 - **Phase One (live at launch, no AI):** a simple loyalty mechanism ([**ADR008**](ADRs/adr008-returning-visitor-mechanism.md)) — discounted renewal or a digital loyalty card, applied automatically on return.
-- **Phase Two (deferred, AI-assisted):** a recommendation model using UC01's popularity data and visitor history — explicitly held back until at least one full operating season of real data exists, so it isn't built against assumptions instead of evidence.
+- **Phase Two (deferred, AI-assisted):** a grounded, retrieval-based recommendation engine and in-park concierge assistant ([**ADR022**](ADRs/adr022-visitor-concierge-personalization-assistant.md)) using UC01's popularity data and visitor history — explicitly held back until at least one full operating season of real data exists, so it isn't built against assumptions instead of evidence. Every response cites its grounding source and a confidence score; nothing is open-ended generation.
 - Visitor identity for both phases runs through **OAuth/OIDC on the estate's own cloud platform** ([**ADR016**](ADRs/adr016-visitor-staff-authentication-access-control.md)) rather than being owned by the ticketing SaaS vendor, avoiding a second vendor lock-in on top of payments.
 
 **Data flow (both phases):**
@@ -196,7 +206,7 @@ Full detail: [Test Approach](usecases/test-approach.md) · per-use-case plans: [
 The solution has two fundamentally different kinds of components, and they're tested differently rather than forced into one framework:
 
 - **Deterministic components** — ticketing integration, ingestion, gateways, dashboards — behave the same way given the same input every time, and get a conventional test pyramid (unit → integration/contract → end-to-end → staff UAT).
-- **Non-deterministic AI components** — anomaly detection, vision-based population counting, any future recommendation model — can produce different outputs for similar inputs, so "correct" is a statistical property, not a fixed assertion. These get golden-set regression as a **hard CI/CD gate** ([ADR011](ADRs/adr011-verification-nondeterministic-outputs.md), [ADR020](ADRs/adr020-cicd-model-deployment-pipeline.md)), shadow/canary evaluation for high-stakes changes, continuous production drift monitoring, and keeper feedback capture — layered on top of, not instead of, conventional testing.
+- **Non-deterministic AI components** — anomaly detection, vision-based population counting, any future recommendation model — can produce different outputs for similar inputs, so "correct" is a statistical property, not a fixed assertion. These get golden-set regression as a **hard CI/CD gate** ([ADR011](ADRs/adr011-verification-nondeterministic-outputs.md), [ADR020](ADRs/adr020-cicd-model-deployment-pipeline.md)), shadow/canary evaluation for high-stakes changes, continuous production drift monitoring, and keeper feedback capture — layered on top of, not instead of, conventional testing. The [**AI Governance Console**](wireframes/ai-governance-console-wireframe.html) wireframe makes this concrete: a per-category test-result breakdown behind every golden-set score, a drift status per model, and a deploy-gate log where a failing result blocks promotion until an explicit, attributed override.
 
 Both tracks converge on the same shared observability stack ([ADR017](ADRs/adr017-observability-monitoring-infrastructure.md)), and both are subject to the same cross-cutting non-functional tests: load/performance scaled to the 15,000 visitors/day growth target (not just current volume), resilience against a simulated gateway backhaul outage, security tests for LoRaWAN keys/gateway certificates/RBAC boundaries ([ADR015](ADRs/adr015-iot-device-mqtt-security.md), [ADR016](ADRs/adr016-visitor-staff-authentication-access-control.md)), and disaster-recovery restore drills ([ADR019](ADRs/adr019-disaster-recovery-backup-strategy.md)).
 

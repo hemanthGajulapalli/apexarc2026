@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vet Console</title>
+<link rel="stylesheet" href="/shared/design-system.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="/index.html"><span class="brand-glyph" style="background:linear-gradient(135deg,var(--danger),#B91C1C);"></span> Vet Console — Von Digitalis Estates</a>
+  <div class="topbar-meta"><span class="badge" id="who-badge">…</span></div>
+</div>
+
+<div class="page" id="feed-view">
+  <div class="region">
+    <div class="region-label">Animal health alerts</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Prioritized by severity. Low-confidence detections are logged only. Click a row to review.</p>
+    <div id="alert-list"></div>
+  </div>
+</div>
+
+<div class="page" id="detail-view" style="display:none;">
+  <div class="breadcrumb"><a href="#" id="back-to-feed">Alert Feed</a> / <span id="detail-title"></span></div>
+  <div class="region" id="alert-summary"></div>
+
+  <div class="region">
+    <div class="region-label">Log feeding &amp; behavior</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Keeper-logged data is a first-class model input alongside sensor data (ADR005).</p>
+    <form id="feeding-form" style="max-width:320px;">
+      <div class="field"><label>Amount fed (g)</label><input type="number" id="feed-amount" value="120" required></div>
+      <div class="field"><label>Behavior notes</label><textarea id="behavior-notes" rows="2" placeholder="e.g. less active than usual"></textarea></div>
+      <button class="btn primary" type="submit">Log entry</button>
+    </form>
+  </div>
+
+  <div class="region" id="review-region" style="display:none;">
+    <div class="region-label">Keeper review</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Every notified alert is labeled true/false-positive — that label feeds the model tuning loop (ADR007).</p>
+    <div class="field"><label>Note (required)</label><textarea id="review-note" rows="2"></textarea></div>
+    <div class="field error-text" id="review-error" style="display:none;"></div>
+    <div style="display:flex; gap:12px;">
+      <button class="btn" id="dismiss-btn">Dismiss — false positive</button>
+      <button class="btn primary" id="confirm-btn">Confirm — real issue</button>
+    </div>
+  </div>
+
+  <div class="region" id="treatment-region" style="display:none;">
+    <div class="region-label">Recommend treatment</div>
+    <div class="field"><label>Proposed plan</label><input type="text" id="treatment-plan" placeholder="e.g. reduce feed 20% for 48h"></div>
+    <div class="field"><label>Note</label><input type="text" id="treatment-note"></div>
+    <button class="btn primary" id="treatment-btn">Approve treatment</button>
+  </div>
+</div>
+
+<script type="module">
+import { api, toast, requireRole, escapeHtml, onClickBusy, skeletonRows, emptyState, ensureDemoSession } from '/shared/api.js';
+
+await ensureDemoSession();
+const user = requireRole('keeper');
+if (user) {
+  document.getElementById('who-badge').textContent = `Role: Keeper — ${user.displayName}`;
+  loadFeed();
+  document.getElementById('back-to-feed').addEventListener('click', (e) => { e.preventDefault(); showFeed(); });
+  document.getElementById('feeding-form').addEventListener('submit', onLogFeeding);
+}
+
+const sevBadge = { critical: 'danger', warn: 'warn', info: '' };
+
+function showFeed() {
+  document.getElementById('feed-view').style.display = '';
+  document.getElementById('detail-view').style.display = 'none';
+  loadFeed();
+}
+
+async function loadFeed() {
+  const list = document.getElementById('alert-list');
+  skeletonRows(list, 3, 70);
+  const alerts = await api('GET', '/animal-health/alerts');
+  if (!alerts.length) return emptyState(list, 'No alerts right now.');
+  list.innerHTML = alerts.map((a) => `
+    <div class="row ${a.severity === 'critical' ? 'critical' : a.severity === 'warn' ? 'warn' : ''}" style="cursor:pointer;" data-id="${a.id}">
+      <span class="badge ${sevBadge[a.severity]}" style="text-transform:uppercase;">${a.severity}</span>
+      <span style="font-weight:700; min-width:150px;">${escapeHtml(a.zone_name)}</span>
+      <span style="color:var(--muted); font-size:13px;">${escapeHtml(a.alert_type.replace(/_/g, ' '))}</span>
+      ${a.confidence ? `<span style="font-size:12px; color:var(--muted);">conf ${Math.round(a.confidence * 100)}%</span>` : ''}
+      <span class="badge" style="margin-left:auto;">${a.status}</span>
+    </div>
+  `).join('');
+  list.querySelectorAll('.row').forEach((row) => row.addEventListener('click', () => openAlert(row.dataset.id)));
+}
+
+let currentAlert = null;
+
+async function openAlert(id) {
+  document.getElementById('feed-view').style.display = 'none';
+  document.getElementById('detail-view').style.display = '';
+  const alerts = await api('GET', '/animal-health/alerts');
+  currentAlert = alerts.find((a) => a.id === id);
+  document.getElementById('detail-title').textContent = currentAlert.zone_name;
+
+  document.getElementById('alert-summary').innerHTML = `
+    <div class="region-label">${escapeHtml(currentAlert.alert_type.replace(/_/g, ' '))}</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+      <span class="badge ${sevBadge[currentAlert.severity]}" style="text-transform:uppercase;">${currentAlert.severity}</span>
+      <span class="badge">${currentAlert.origin === 'edge_threshold' ? 'Edge threshold (ADR002)' : 'Cloud model'}</span>
+      ${currentAlert.confidence ? `<span class="chip">confidence ${Math.round(currentAlert.confidence * 100)}%</span>` : ''}
+      <span class="badge ${currentAlert.status === 'confirmed' ? 'danger' : currentAlert.status === 'dismissed' ? 'ok' : ''}">${currentAlert.status}</span>
+    </div>
+    ${currentAlert.grounding ? `<p style="color:var(--muted); font-size:13px; margin-top:10px;">Grounded in: ${escapeHtml(currentAlert.grounding)}</p>` : ''}
+    ${currentAlert.resolution_note ? `<p style="font-size:13px; margin-top:10px;"><b>Keeper note:</b> ${escapeHtml(currentAlert.resolution_note)}</p>` : ''}
+  `;
+
+  const reviewRegion = document.getElementById('review-region');
+  const treatmentRegion = document.getElementById('treatment-region');
+  if (currentAlert.status === 'notified' || currentAlert.status === 'logged') {
+    reviewRegion.style.display = '';
+    treatmentRegion.style.display = 'none';
+  } else if (currentAlert.status === 'confirmed') {
+    reviewRegion.style.display = 'none';
+    treatmentRegion.style.display = '';
+  } else {
+    reviewRegion.style.display = 'none';
+    treatmentRegion.style.display = 'none';
+  }
+}
+
+async function resolveAlert(decision) {
+  const note = document.getElementById('review-note').value.trim();
+  const errEl = document.getElementById('review-error');
+  if (!note) {
+    errEl.textContent = 'A note is required to label this alert (ADR007).';
+    errEl.style.display = '';
+    throw new Error('note required');
+  }
+  errEl.style.display = 'none';
+  await api('POST', `/animal-health/alerts/${currentAlert.id}/${decision}`, { note });
+  toast(decision === 'confirmed' ? 'Confirmed — feeds the tuning loop.' : 'Dismissed as false positive — feeds the tuning loop.');
+  document.getElementById('review-note').value = '';
+  await openAlert(currentAlert.id);
+}
+onClickBusy(document.getElementById('dismiss-btn'), 'Submitting…', () => resolveAlert('dismiss'));
+onClickBusy(document.getElementById('confirm-btn'), 'Submitting…', () => resolveAlert('confirm'));
+
+onClickBusy(document.getElementById('treatment-btn'), 'Submitting…', async () => {
+  const plan = document.getElementById('treatment-plan').value.trim();
+  const note = document.getElementById('treatment-note').value.trim();
+  if (!plan || !note) { toast('Plan and note are both required.', { error: true }); return; }
+  await api('POST', `/animal-health/alerts/${currentAlert.id}/treatment`, { plan, note });
+  toast('Treatment approved.');
+  document.getElementById('treatment-region').style.display = 'none';
+});
+
+async function onLogFeeding(e) {
+  e.preventDefault();
+  if (!currentAlert) return;
+  try {
+    await api('POST', '/animal-health/feeding-logs', {
+      zoneId: currentAlert.zone_id,
+      amountG: Number(document.getElementById('feed-amount').value),
+      behaviorNotes: document.getElementById('behavior-notes').value.trim() || undefined,
+    });
+    toast('Feeding logged.');
+    document.getElementById('behavior-notes').value = '';
+  } catch (err) {
+    toast(err.message, { error: true });
+  }
+}
+</script>
+</body>
+</html>

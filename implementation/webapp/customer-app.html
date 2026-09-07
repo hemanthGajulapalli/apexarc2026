@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer App</title>
+<link rel="stylesheet" href="/shared/design-system.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="/index.html"><span class="brand-glyph" style="background:linear-gradient(135deg,var(--ok),#15803D);"></span> Customer App — Von Digitalis Estates</a>
+  <div class="topbar-meta">
+    <span class="badge" id="who-badge">…</span>
+    <button class="btn" id="account-link">My Account</button>
+  </div>
+</div>
+
+<div class="page" id="hub-view">
+  <div class="region">
+    <div class="region-label">Buy tickets</div>
+    <form id="ticket-form" style="max-width:360px;">
+      <div class="field"><label>Visit date</label><input type="date" id="visit-date" required></div>
+      <div class="field"><label>Adults</label><input type="number" id="adults" value="2" min="0"></div>
+      <div class="field"><label>Children</label><input type="number" id="children" value="0" min="0"></div>
+      <div class="field"><label>Add-ons</label>
+        <select id="addons" multiple size="2">
+          <option value="parking">Parking ($8)</option>
+          <option value="skip_the_line">Skip-the-line ($12)</option>
+        </select>
+      </div>
+      <div class="field"><label>Promo code</label><input type="text" id="promo" placeholder="try RETURN10"></div>
+      <button class="btn primary" type="submit">Buy tickets</button>
+    </form>
+  </div>
+
+  <div class="region label-ai" id="offers-region">
+    <div class="region-label">Personalized offers (Customer GenAI)</div>
+    <div style="display:flex; align-items:center; gap:8px; margin:-4px 0 12px; flex-wrap:wrap;">
+      <span class="tag tag-ai">Phase Two — pilot</span>
+      <span style="font-size:12px; color:var(--muted);">Gated on real popularity + ticketing history existing first (ADR008).</span>
+    </div>
+    <div id="offers-content"></div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Ask the Tour Assistant</div>
+    <form id="ask-form" style="display:flex; gap:10px;">
+      <input type="text" id="ask-input" placeholder="e.g. Is Piranha Falls open?" style="flex:1; border:1px solid var(--border); border-radius:8px; padding:9px 12px;">
+      <button class="btn primary" type="submit">Ask</button>
+    </form>
+    <div id="ask-answer" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<div class="page" id="account-view" style="display:none;">
+  <div class="breadcrumb"><a href="#" id="back-to-hub">Ticket Hub</a> / Account &amp; Loyalty</div>
+  <div class="region">
+    <div class="region-label">Digital loyalty card</div>
+    <div id="loyalty-card"></div>
+  </div>
+  <div class="region label-ai">
+    <div class="region-label">Personalization &amp; privacy</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">We use your past visits and estate-wide popularity trends to suggest recommendations. Your individual location is never stored beyond aggregation (ADR018).</p>
+    <button class="btn primary" id="personalization-toggle">…</button>
+  </div>
+</div>
+
+<script type="module">
+import { api, toast, requireSession, escapeHtml, onClickBusy, ensureDemoSession } from '/shared/api.js';
+
+await ensureDemoSession();
+const user = requireSession();
+if (user) {
+  document.getElementById('who-badge').textContent = `Signed in — ${user.displayName || user.email}`;
+  document.getElementById('visit-date').valueAsDate = new Date(Date.now() + 5 * 86400000);
+  document.getElementById('ticket-form').addEventListener('submit', onBuyTickets);
+  document.getElementById('ask-form').addEventListener('submit', onAsk);
+  document.getElementById('account-link').addEventListener('click', showAccount);
+  document.getElementById('back-to-hub').addEventListener('click', (e) => { e.preventDefault(); showHub(); });
+  loadOffers();
+}
+
+function showHub() {
+  document.getElementById('hub-view').style.display = '';
+  document.getElementById('account-view').style.display = 'none';
+}
+async function showAccount() {
+  document.getElementById('hub-view').style.display = 'none';
+  document.getElementById('account-view').style.display = '';
+  await loadAccount();
+}
+
+async function onBuyTickets(e) {
+  e.preventDefault();
+  const addOns = Array.from(document.getElementById('addons').selectedOptions).map((o) => o.value);
+  try {
+    const ticket = await api('POST', '/ticketing/purchase', {
+      visitDate: document.getElementById('visit-date').value,
+      adults: Number(document.getElementById('adults').value),
+      children: Number(document.getElementById('children').value),
+      addOns,
+      promoCode: document.getElementById('promo').value.trim() || undefined,
+    });
+    toast(`Purchased — total $${ticket.total_price}`);
+  } catch (err) {
+    toast(err.message, { error: true });
+  }
+}
+
+async function loadOffers() {
+  const el = document.getElementById('offers-content');
+  try {
+    const { offers } = await api('GET', '/personalization/offers');
+    el.innerHTML = offers.length
+      ? offers.map((o) => `<div class="row"><div><div>${escapeHtml(o.offer_text)}</div><div class="chip" style="margin-top:6px; display:inline-flex;">grounded in ${escapeHtml(o.grounding)} · confidence ${Math.round(o.confidence * 100)}%</div></div></div>`).join('')
+      : '<div class="empty-state">No visit history yet to personalize against.</div>';
+  } catch (err) {
+    if (err.status === 403) {
+      el.innerHTML = `<p style="color:var(--muted); font-size:13px;">Personalization is off — falling back to your Phase One loyalty benefit only (ADR018). <a href="#" id="turn-on-link">Turn it back on →</a></p>`;
+      document.getElementById('turn-on-link')?.addEventListener('click', async (ev) => { ev.preventDefault(); await showAccount(); });
+    } else {
+      el.innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`;
+    }
+  }
+}
+
+async function onAsk(e) {
+  e.preventDefault();
+  const question = document.getElementById('ask-input').value.trim();
+  if (!question) return;
+  const answerEl = document.getElementById('ask-answer');
+  answerEl.innerHTML = '<div class="skeleton" style="height:40px;"></div>';
+  try {
+    const res = await api('POST', '/concierge/ask', { question });
+    answerEl.innerHTML = `<div class="row">${escapeHtml(res.answer)}</div><div class="chip" style="margin-top:6px;">grounded in ${escapeHtml(res.grounding)} · confidence ${Math.round(res.confidence * 100)}%</div>`;
+  } catch (err) {
+    answerEl.innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+async function loadAccount() {
+  const loyalty = await api('GET', '/ticketing/loyalty');
+  document.getElementById('loyalty-card').innerHTML = `
+    <div style="border-radius:12px; background:linear-gradient(135deg,#1B2437,#111827); color:#fff; padding:20px; max-width:360px; display:flex; flex-direction:column; gap:26px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div style="font-family:var(--mono); font-size:12px; letter-spacing:.05em;">VON DIGITALIS ESTATES</div>
+        <span class="badge ok" style="background:rgba(255,255,255,.15); color:#fff;">Active</span>
+      </div>
+      <div>
+        <div style="font-size:11px; opacity:.7; text-transform:uppercase;">Member since</div>
+        <div style="font-size:15px; font-weight:700;">${new Date(loyalty.member_since).toLocaleDateString()}</div>
+      </div>
+    </div>
+    <p style="color:var(--muted); font-size:13px; margin:14px 0 0;">Your next visit: <b>${escapeHtml(loyalty.active_perk)}</b>, auto-applied at checkout (Phase One, ADR008).</p>
+  `;
+  const toggle = document.getElementById('personalization-toggle');
+  toggle.textContent = `Personalized recommendations: ${loyalty.personalization_opt_in ? 'ON' : 'OFF'}`;
+  toggle.classList.toggle('primary', loyalty.personalization_opt_in);
+  toggle.onclick = async () => {
+    const next = !loyalty.personalization_opt_in;
+    await api('PATCH', '/ticketing/loyalty/consent', { optIn: next });
+    toast(`Personalization turned ${next ? 'on' : 'off'}.`);
+    await loadAccount();
+    await loadOffers();
+  };
+}
+</script>
+</body>
+</html>

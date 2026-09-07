@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Local Postgres data directory (deliberately kept outside git and outside
+# ~/Documents entirely — see implementation/README.md for why; this repo
+# only ever contains the *schema*, never the data directory itself)
+implementation/db/pgdata/
+implementation/db/sockets/
+implementation/db/pg.log
+implementation/db/*.log
+
+# Editor / OS
+.DS_Store

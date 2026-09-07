@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platform Home — Wireframe</title>
+<style>:root{
+  --canvas:#F4F6FB; --surface:#FFFFFF; --ink:#1B2437; --muted:#5B6B8C; --border:#E3E9F3;
+  --primary:#2563EB; --primary-deep:#1D4ED8; --primary-tint:#EAF1FE;
+  --ai:#7C3AED; --ai-tint:#F0EAFF;
+  --ok:#16A34A; --ok-tint:#E7F6EC;
+  --warn:#D97706; --warn-tint:#FEF3C7;
+  --danger:#DC2626; --danger-tint:#FEE2E2;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:Consolas,Menlo,monospace;
+  --shadow:0 1px 3px rgba(27,36,55,.06),0 4px 14px rgba(27,36,55,.06);
+  --radius:12px;
+}
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:var(--sans); background:var(--canvas); color:var(--ink); font-size:14px; line-height:1.45; }
+.page{ max-width:1140px; margin:0 auto; padding:24px 20px 56px; }
+.topbar{ position:sticky; top:0; z-index:20; background:var(--surface); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+.brand-glyph{ width:26px; height:26px; border-radius:7px; background:linear-gradient(135deg,#1B2437,#4C1D95); }
+.topbar-meta{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.region{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin:16px 0; box-shadow:var(--shadow); }
+.region-label{ font-size:11px; letter-spacing:.9px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:12px; padding-left:10px; border-left:3px solid var(--primary); }
+.btn{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:var(--surface); color:var(--ink); padding:8px 14px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; text-decoration:none; transition:background .15s,border-color .15s,color .15s; }
+.btn:hover{ background:var(--primary-tint); border-color:var(--primary); color:var(--primary-deep); }
+.btn.primary{ background:var(--primary); border-color:var(--primary); color:#fff; }
+.btn.primary:hover{ background:var(--primary-deep); border-color:var(--primary-deep); color:#fff; }
+.badge{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; background:#EEF1F7; color:var(--muted); }
+.badge.badge-blue{ background:var(--primary-tint); color:var(--primary-deep); }
+.badge.ai{ background:var(--ai-tint); color:#6D28D9; }
+.badge.ok{ background:var(--ok-tint); color:#15803D; }
+.badge.danger{ background:var(--danger-tint); color:#B91C1C; }
+.hero{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:28px; margin:16px 0 24px; box-shadow:var(--shadow); }
+.hero h1{ margin:0 0 8px; font-size:22px; }
+.hero p{ margin:0; color:var(--muted); max-width:640px; }
+.app-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(430px,1fr)); gap:16px; }
+.app-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:14px; }
+.app-head{ display:flex; align-items:flex-start; gap:12px; }
+.app-glyph{ width:40px; height:40px; border-radius:10px; flex:none; }
+.app-title{ font-weight:700; font-size:16px; }
+.app-desc{ color:var(--muted); font-size:13px; margin-top:2px; }
+.app-adrs{ font-size:11.5px; color:var(--muted); font-family:var(--mono); }
+.screen-links{ display:flex; flex-wrap:wrap; gap:8px; }
+.screen-link{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; font-size:12.5px; border:1px solid var(--border); background:var(--canvas); color:var(--ink); text-decoration:none; }
+.screen-link:hover{ border-color:var(--primary); color:var(--primary-deep); background:var(--primary-tint); }
+.screen-link::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--muted); }
+.app-actions{ display:flex; gap:10px; margin-top:2px; }
+.sitemap-count{ font-family:var(--mono); }
+.legend-row{ display:flex; gap:16px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); }
+.legend-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="brand-glyph"></span> Von Digitalis Estates — Platform Home</div>
+  <div class="topbar-meta">
+    <span class="badge badge-blue sitemap-count">4 apps · 16 screens</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <h1>Digital platform — wireframe index</h1>
+    <p>Four role-scoped apps realize the estate's use cases (UC01–UC04) and their supporting ADRs. This page links to every screen across every app — open a card's primary button for its home screen, or jump straight to a specific screen below it.</p>
+  </div>
+
+  <div class="app-grid">
+
+    <div class="app-card">
+      <div class="app-head">
+        <span class="app-glyph" style="background:linear-gradient(135deg,var(--primary),var(--primary-deep));"></span>
+        <div>
+          <div class="app-title">Ops Dashboard</div>
+          <span class="badge badge-blue">Operations / Admin</span>
+          <div class="app-desc">Popularity analytics, hot-zone forecasting, and the staff/investment decision panel with mandatory approval + audit trail.</div>
+          <div class="app-adrs">ADR001 · ADR003 · ADR004 · ADR007 · ADR021</div>
+        </div>
+      </div>
+      <div class="screen-links">
+        <a class="screen-link" href="ops-dashboard-wireframe.html#screen-overview">Estate Overview</a>
+        <a class="screen-link" href="ops-dashboard-wireframe.html#screen-zone">Zone Drill-down</a>
+        <a class="screen-link" href="ops-dashboard-wireframe.html#screen-decisions">Decision Panel</a>
+      </div>
+      <div class="app-actions">
+        <a class="btn primary" href="ops-dashboard-wireframe.html">Open Ops Dashboard →</a>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-head">
+        <span class="app-glyph" style="background:linear-gradient(135deg,var(--danger),#B91C1C);"></span>
+        <div>
+          <div class="app-title">Vet Console</div>
+          <span class="badge danger">Keeper</span>
+          <div class="app-desc">Animal health alerts, feeding &amp; behavior logging, piranha population review, and treatment confirmation — every AI flag ends in a human decision.</div>
+          <div class="app-adrs">ADR002 · ADR005 · ADR006 · ADR007 · ADR011</div>
+        </div>
+      </div>
+      <div class="screen-links">
+        <a class="screen-link" href="vet-console-wireframe.html#screen-feed">Alert Feed</a>
+        <a class="screen-link" href="vet-console-wireframe.html#screen-detail">Animal Detail</a>
+        <a class="screen-link" href="vet-console-wireframe.html#screen-population">Population Review</a>
+        <a class="screen-link" href="vet-console-wireframe.html#screen-confirm">Treatment Confirm</a>
+      </div>
+      <div class="app-actions">
+        <a class="btn primary" href="vet-console-wireframe.html">Open Vet Console →</a>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-head">
+        <span class="app-glyph" style="background:linear-gradient(135deg,var(--ai),#4C1D95);"></span>
+        <div>
+          <div class="app-title">AI Governance Console</div>
+          <span class="badge ai">Admin</span>
+          <div class="app-desc">Model registry with golden-set and drift status, a blocked-deploy override log, and staff/RBAC account management.</div>
+          <div class="app-adrs">ADR011 · ADR016 · ADR020 · ADR021 · ADR022</div>
+        </div>
+      </div>
+      <div class="screen-links">
+        <a class="screen-link" href="ai-governance-console-wireframe.html#screen-registry">Model Registry</a>
+        <a class="screen-link" href="ai-governance-console-wireframe.html#screen-model">Model Detail</a>
+        <a class="screen-link" href="ai-governance-console-wireframe.html#screen-accounts">Staff Accounts</a>
+      </div>
+      <div class="app-actions">
+        <a class="btn primary" href="ai-governance-console-wireframe.html">Open Governance Console →</a>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-head">
+        <span class="app-glyph" style="background:linear-gradient(135deg,var(--ok),#15803D);"></span>
+        <div>
+          <div class="app-title">Customer App</div>
+          <span class="badge ok">Visitor</span>
+          <div class="app-desc">Sign-in, ticket &amp; family-pass purchase, checkout, the Tour Assistant concierge, and account &amp; loyalty management.</div>
+          <div class="app-adrs">ADR008 · ADR009 · ADR016 · ADR018 · ADR022</div>
+        </div>
+      </div>
+      <div class="screen-links">
+        <a class="screen-link" href="visitor-hub-wireframe.html#screen-signin">Sign In</a>
+        <a class="screen-link" href="visitor-hub-wireframe.html#screen-hub">Ticket Hub</a>
+        <a class="screen-link" href="visitor-hub-wireframe.html#screen-options">Ticket Options</a>
+        <a class="screen-link" href="visitor-hub-wireframe.html#screen-checkout">Checkout</a>
+        <a class="screen-link" href="visitor-hub-wireframe.html#screen-confirm">Confirmation</a>
+        <a class="screen-link" href="visitor-hub-wireframe.html#screen-account">Account &amp; Loyalty</a>
+      </div>
+      <div class="app-actions">
+        <a class="btn primary" href="visitor-hub-wireframe.html">Open Customer App →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="region" style="margin-top:24px;">
+    <div class="region-label">Role coverage (ADR016)</div>
+    <div class="legend-row">
+      <span><span class="legend-dot" style="background:var(--danger);"></span>Keeper — Vet Console</span>
+      <span><span class="legend-dot" style="background:var(--primary);"></span>Operations — Ops Dashboard</span>
+      <span><span class="legend-dot" style="background:var(--ai);"></span>Admin — Ops Dashboard + Governance Console + Staff Accounts</span>
+      <span><span class="legend-dot" style="background:var(--ok);"></span>Visitor — Customer App</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

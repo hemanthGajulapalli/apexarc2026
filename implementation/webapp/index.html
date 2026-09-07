@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platform Home</title>
+<link rel="stylesheet" href="/shared/design-system.css">
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand"><span class="brand-glyph" style="background:linear-gradient(135deg,#1B2437,#4C1D95);"></span> Von Digitalis Estates — Platform</span>
+  <div class="topbar-meta"><span class="badge" id="who-badge">Not signed in</span><button class="btn" id="signout-btn" style="display:none;">Sign out</button></div>
+</div>
+
+<div class="page">
+  <div class="region" id="signin-region">
+    <div class="region-label">Sign in</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Visitor identity is kept separate from ticket payment (ADR016). This demo signs in directly rather than round-tripping a real OAuth provider — see <code>implementation/server/src/middleware/auth.js</code> for why.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:16px;">
+      <div class="region" style="margin:0;">
+        <div class="region-label">Visitor</div>
+        <form id="visitor-form" class="stack">
+          <div class="field"><label>Email</label><input type="email" id="visitor-email" placeholder="you@example.com" required></div>
+          <div class="field"><label>Name</label><input type="text" id="visitor-name" placeholder="Your name" required></div>
+          <button class="btn primary" type="submit" style="width:100%; justify-content:center;">Continue with Estate Account</button>
+        </form>
+      </div>
+
+      <div class="region" style="margin:0;">
+        <div class="region-label">Staff (demo accounts)</div>
+        <div class="stack">
+          <button class="btn" style="width:100%; justify-content:center;" data-email="amara.osei@vondigitalis.example" data-name="Amara Osei">Sign in as Keeper (Amara Osei)</button>
+          <button class="btn" style="width:100%; justify-content:center;" data-email="jonas.meyer@vondigitalis.example" data-name="Jonas Meyer">Sign in as Operations (Jonas Meyer)</button>
+          <button class="btn" style="width:100%; justify-content:center;" data-email="priya.nair@vondigitalis.example" data-name="Priya Nair">Sign in as Admin (Priya Nair)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="region" id="apps-region" style="display:none;">
+    <div class="region-label">Your apps</div>
+    <div id="apps-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px;"></div>
+  </div>
+</div>
+
+<script type="module">
+import { api, getUser, setSession, clearSession, toast } from '/shared/api.js';
+
+const apps = [
+  { href: 'customer-app.html', label: 'Customer App', desc: 'Tickets, loyalty, concierge', kind: 'visitor', glyph: 'linear-gradient(135deg,var(--ok),#15803D)' },
+  { href: 'vet-console.html', label: 'Vet Console', desc: 'Animal health & feeding', role: 'keeper', glyph: 'linear-gradient(135deg,var(--danger),#B91C1C)' },
+  { href: 'ops-dashboard.html', label: 'Ops Dashboard', desc: 'Popularity & decisions', role: 'operations', glyph: 'linear-gradient(135deg,var(--primary),var(--primary-deep))' },
+  { href: 'ai-governance-console.html', label: 'AI Governance Console', desc: 'Model registry & deploy gate', role: 'admin', glyph: 'linear-gradient(135deg,var(--ai),#4C1D95)' },
+];
+
+function render() {
+  const user = getUser();
+  if (!user) {
+    document.getElementById('who-badge').textContent = 'Not signed in';
+    document.getElementById('signout-btn').style.display = 'none';
+    document.getElementById('signin-region').style.display = '';
+    document.getElementById('apps-region').style.display = 'none';
+    return;
+  }
+  document.getElementById('who-badge').textContent = `Signed in — ${user.displayName || user.email}`;
+  document.getElementById('signout-btn').style.display = '';
+  document.getElementById('signin-region').style.display = 'none';
+  document.getElementById('apps-region').style.display = '';
+
+  const available = apps.filter((a) => (a.kind && a.kind === user.kind) || (a.role && (user.staffRoles || []).includes(a.role)));
+  document.getElementById('apps-list').innerHTML = available.map((a) => `
+    <a href="${a.href}" class="region" style="margin:0; text-decoration:none; color:inherit; display:flex; gap:12px; align-items:center;">
+      <span style="width:40px; height:40px; border-radius:10px; flex:none; background:${a.glyph};"></span>
+      <div><div style="font-weight:700;">${a.label}</div><div style="color:var(--muted); font-size:12.5px;">${a.desc}</div></div>
+    </a>`).join('') || '<div class="empty-state">No apps available for this account.</div>';
+}
+
+document.getElementById('visitor-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const { token, user } = await api('POST', '/auth/signin', {
+      provider: 'estate',
+      email: document.getElementById('visitor-email').value.trim(),
+      displayName: document.getElementById('visitor-name').value.trim(),
+      kind: 'visitor',
+    });
+    setSession(token, user);
+    render();
+  } catch (err) { toast(err.message, { error: true }); }
+});
+
+document.querySelectorAll('[data-email]').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    try {
+      const { token, user } = await api('POST', '/auth/signin', {
+        provider: 'estate', email: btn.dataset.email, displayName: btn.dataset.name, kind: 'staff',
+      });
+      const me = await (async () => { setSession(token, user); return api('GET', '/auth/me'); })();
+      setSession(token, { ...user, staffRoles: me.staffRoles });
+      render();
+    } catch (err) { toast(err.message, { error: true }); }
+  });
+});
+
+document.getElementById('signout-btn').addEventListener('click', () => { clearSession(); render(); });
+
+render();
+</script>
+</body>
+</html>

@@ -397,6 +397,13 @@ input[type=text]:focus{ outline:none; border-color:var(--primary); box-shadow:0 
   document.getElementById('screen-decisions').addEventListener('click', function () {
     document.getElementById('decision-zone').textContent = selectedZone;
   });
+
+  switchTab('staff');
+
+  (function () {
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) { showScreen(hash); }
+  })();
 </script>
 </body>
 </html>

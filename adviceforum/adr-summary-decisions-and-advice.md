@@ -1,6 +1,6 @@
 # Von Digitalis Estates — ADR Summary: Final Decisions & Advice
 
-A consolidated index of all 20 ADRs: the final decision made in each, and
+A consolidated index of all 22 ADRs: the final decision made in each, and
 the advice/guidance recorded for the team carrying it forward. See the
 individual ADR files for full context and rejected options.
 
@@ -116,6 +116,31 @@ provider changes.
   monitoring) is the primary trust source, since not every feature has
   reliable human feedback available (e.g. population counting).
 
+### ADR021 — Popularity Forecasting & Staff/Investment Recommendation Engine
+**Decision:** Add a same-day demand forecasting model plus a
+recommendation model ("Ops AI") on top of ADR004's existing hourly/
+daily aggregates — no new streaming infrastructure. Every staffing or
+investment recommendation requires explicit human approval (identity +
+comment, audit-logged) before being committed.
+**Advice:**
+- Track forecast accuracy (MAPE) and recommendation approval/override
+  rates from day one in the AI Governance Console — this model was live
+  in the product wireframes before it had golden-set or drift coverage;
+  don't repeat that gap for the next AI feature.
+- Validate MAPE against a naive baseline before trusting the model's
+  added value.
+
+### ADR022 — Visitor Concierge & Personalization Assistant ("Customer GenAI")
+**Decision:** A grounded, retrieval-based conversational assistant plus
+personalized checkout offers — not open-ended generation — gated on
+UC04's existing Phase Two data-maturity trigger (ADR008). Every response
+carries a confidence score and states its grounding source.
+**Advice:**
+- Build the conversational golden-set from real visitor questions, not
+  synthetic ones.
+- Treat ride/animal-safety-adjacent answers as a distinct, higher-bar
+  golden-set category than general park-info questions.
+
 ---
 
 ## Foundational Architecture Decisions
@@ -215,3 +240,10 @@ for any model/provider change.
 - **Verify, don't assume, before trusting AI outputs unsupervised:**
   ADR006, ADR007, ADR011, and ADR020 all require an explicit validation
   step before an AI feature or model change is trusted or deployed.
+- **Architecture can lag behind the wireframes, but not silently:**
+  ADR021 and ADR022 were both written after their capabilities (Ops AI
+  forecasting/recommendations, Customer GenAI concierge/personalization)
+  were already running in the product wireframes with no ADR, no
+  golden-set/drift coverage, and no trade-off analysis behind them —
+  caught by comparing the architecture against the wireframes directly.
+  Treat that gap-check as a recurring step, not a one-off.

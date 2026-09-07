@@ -145,6 +145,20 @@ input[type=text]:focus,input[type=number]:focus{ outline:none; border-color:var(
       </div>
     </div>
   </div>
+
+  <div class="region">
+    <div class="region-label">Population monitoring</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Periodic vision-assisted counts, not continuous monitoring (ADR006). A meaningful change routes to the same keeper confirm/dismiss pattern as health alerts (ADR007).</p>
+    <div class="alert-row warn">
+      <span class="sev warn">Review</span>
+      <span class="alert-animal">Piranha Tank — Enclosure 41</span>
+      <span class="alert-type">Vision count 34, down 8% vs last capture</span>
+      <span class="conf-bar"><span class="conf-fill" style="width:60%"></span></span>
+      <span class="alert-meta">Piranha-Count v3.1 · conf medium · captured 6 days ago</span>
+      <span class="chip ai">grounded in photo capture + 12-week history</span>
+      <button class="btn row-btn" data-nav="screen-population">Review population →</button>
+    </div>
+  </div>
   </section>
 
   <section class="screen" id="screen-detail">
@@ -208,6 +222,19 @@ input[type=text]:focus,input[type=number]:focus{ outline:none; border-color:var(
     </div>
   </div>
 
+  <div class="region">
+    <div class="region-label">Log feeding &amp; behavior</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Keeper-logged data is a first-class model input alongside sensor data — not just a display of what sensors already report (ADR005).</p>
+    <div style="max-width:320px;">
+      <div class="kpi-label" style="margin-bottom:4px;">Amount fed (g)</div>
+      <input type="number" id="feed-amount" value="120" min="0" style="margin-bottom:4px;">
+      <div style="font-size:12px; color:var(--danger); font-weight:600; margin-bottom:14px;">▼ below baseline (150 g)</div>
+      <div class="kpi-label" style="margin-bottom:4px;">Behavior notes</div>
+      <input type="text" id="behavior-notes" placeholder="e.g. less active than usual, stayed near shelter…" style="margin-bottom:14px;">
+      <button class="btn primary" id="log-feeding-btn">Log entry</button>
+    </div>
+  </div>
+
   <div class="region label-ai">
     <div class="region-label">Health &amp; Feeding AI attribution</div>
     <div style="display:flex; flex-wrap:wrap; gap:8px;">
@@ -218,11 +245,13 @@ input[type=text]:focus,input[type=number]:focus{ outline:none; border-color:var(
     </div>
   </div>
 
-  <div style="display:flex; gap:12px;">
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
     <button class="btn" data-nav="screen-feed">← Back to alerts</button>
     <button class="btn" id="save-care-note">Save care note</button>
+    <button class="btn" id="dismiss-alert">Dismiss — false positive</button>
     <button class="btn primary" data-nav="screen-confirm">Recommend treatment →</button>
   </div>
+  <p style="color:var(--muted); font-size:12px; margin:10px 0 0;">Every notified alert is labeled true/false-positive by the reviewing keeper — that label feeds the model tuning loop (ADR007), whichever direction the review goes.</p>
   </section>
 
   <section class="screen" id="screen-confirm">
@@ -277,6 +306,101 @@ input[type=text]:focus,input[type=number]:focus{ outline:none; border-color:var(
   </div>
   </section>
 
+  <section class="screen" id="screen-population">
+  <div class="breadcrumb"><a data-nav="screen-feed">Alert Feed</a> / Population Review</div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Population count — Piranha Tank</div>
+    <div class="topbar-meta">
+      <span class="badge badge-blue">enclosure <b>Enclosure 41</b></span>
+      <span class="badge ai">Piranha-Count v3.1</span>
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-card">
+      <span class="kpi-icon purple">VC</span>
+      <div><div class="kpi-label">Vision count</div><div class="kpi-value">34</div></div>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon blue">PR</span>
+      <div><div class="kpi-label">Previous count</div><div class="kpi-value">37</div></div>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon red">CH</span>
+      <div><div class="kpi-label">Change</div><div class="kpi-value">▼ 8%</div></div>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon amber">CF</span>
+      <div><div class="kpi-label">Confidence</div><div class="kpi-value">Medium</div></div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Count history — 12 weeks</div>
+    <svg width="100%" height="120" viewBox="0 0 900 120" role="img" aria-label="placeholder population history chart">
+      <line class="chart-axis" x1="40" y1="95" x2="880" y2="95"/>
+      <path class="chart-obs" d="M60 40 L140 36 L220 42 L300 30 L380 34 L460 26 L540 32 L620 44 L700 50 L780 60 L860 68"/>
+      <circle class="chart-now-dot" cx="860" cy="68" r="4"/>
+      <text class="chart-tick" x="50" y="108">12wk ago</text>
+      <text class="chart-tick" x="820" y="108">today</text>
+    </svg>
+    <div class="chart-caption">estimated count per scheduled capture · not continuous monitoring (ADR006)</div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Latest capture</div>
+    <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+      <div style="width:180px; height:120px; border-radius:10px; background:#EDF0F7; display:grid; place-items:center; color:var(--muted); font-size:12px;">photo/video placeholder</div>
+      <div>
+        <div style="font-weight:600;" id="capture-age">Captured 6 days ago</div>
+        <div style="color:var(--muted); font-size:12.5px; margin-top:4px;">Uploaded via zone gateway to object storage (ADR014)</div>
+        <button class="btn" style="margin-top:10px;" id="new-capture">Capture new photo/video</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Corroborating signal</div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <span class="chip ai">Feeding consumption: −6% vs baseline (keeper log)</span>
+      <span class="chip">Model version: Piranha-Count v3.1</span>
+    </div>
+    <p style="color:var(--muted); font-size:13px; margin:12px 0 0;">Low-confidence counts are surfaced for manual review, not auto-reported as fact — the model is a decision aid, not an oracle.</p>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Manual cross-check (optional)</div>
+    <input type="text" id="manual-count" placeholder="Keeper's manual count, if taken">
+  </div>
+
+  <div class="region">
+    <div class="region-label">Audit trail</div>
+    <div class="audit-card"><div id="pop-audit-list">(empty)</div></div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn" data-nav="screen-feed">← Back to alerts</button>
+    <button class="btn" id="pop-dismiss">Dismiss — within normal variance</button>
+    <button class="btn primary" id="pop-confirm-open">Confirm — meaningful decline</button>
+  </div>
+
+  <div id="pop-approve-modal" class="overlay">
+    <div class="modal-card">
+      <div class="region-label">Confirm population review</div>
+      <p id="pop-approve-text">Log this as a confirmed meaningful decline requiring follow-up?</p>
+      <div class="stack">
+        <input type="text" id="pop-keeper-name" placeholder="Keeper identity (required)">
+        <input type="text" id="pop-keeper-note" placeholder="Note (required)">
+      </div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn primary" id="pop-confirm-btn">Confirm</button>
+        <button class="btn" id="pop-cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  </section>
+
 </div>
 
 <script>
@@ -319,6 +443,17 @@ input[type=text]:focus,input[type=number]:focus{ outline:none; border-color:var(
   document.getElementById('cancel-btn').addEventListener('click', function () {
     document.getElementById('approve-modal').style.display = 'none';
   });
+  document.getElementById('dismiss-alert').addEventListener('click', function () {
+    var animal = document.getElementById('animal-title').textContent;
+    var row = document.querySelector('#alert-list .alert-row[data-animal="' + animal + '"]');
+    if (row && !row.querySelector('.dismissed-tag')) {
+      var tag = document.createElement('span');
+      tag.className = 'tag tag-ok dismissed-tag';
+      tag.textContent = 'Dismissed — false positive';
+      row.insertBefore(tag, row.querySelector('.row-btn'));
+    }
+    showScreen('screen-feed');
+  });
   document.getElementById('save-care-note').addEventListener('click', function () {
     var row = document.createElement('div');
     row.className = 'feed-row';
@@ -335,6 +470,49 @@ input[type=text]:focus,input[type=number]:focus{ outline:none; border-color:var(
     var entry = name + ' · ' + new Date().toISOString() + ' · Health & Feeding AI v7.2 · ' + note;
     document.getElementById('audit-list').innerHTML += '<div class="badge" style="display:block; margin-bottom:4px;">' + entry + '</div>';
   });
+
+  document.getElementById('log-feeding-btn').addEventListener('click', function () {
+    var amount = document.getElementById('feed-amount').value.trim() || '0';
+    var notes = document.getElementById('behavior-notes').value.trim();
+    var row = document.createElement('div');
+    row.className = 'feed-row';
+    var left = document.createElement('span');
+    left.textContent = 'Logged just now';
+    var right = document.createElement('span');
+    right.textContent = amount + ' g' + (notes ? ' · ' + notes : '');
+    row.appendChild(left);
+    row.appendChild(right);
+    document.getElementById('feed-history').appendChild(row);
+    document.getElementById('behavior-notes').value = '';
+  });
+
+  document.getElementById('new-capture').addEventListener('click', function () {
+    document.getElementById('capture-age').textContent = 'Captured just now';
+  });
+  document.getElementById('pop-dismiss').addEventListener('click', function () {
+    var entry = 'Dismissed — within normal variance · ' + new Date().toISOString();
+    document.getElementById('pop-audit-list').innerHTML += '<div class="badge" style="display:block; margin-bottom:4px;">' + entry + '</div>';
+  });
+  document.getElementById('pop-confirm-open').addEventListener('click', function () {
+    document.getElementById('pop-approve-modal').style.display = 'block';
+  });
+  document.getElementById('pop-cancel-btn').addEventListener('click', function () {
+    document.getElementById('pop-approve-modal').style.display = 'none';
+  });
+  document.getElementById('pop-confirm-btn').addEventListener('click', function () {
+    var name = document.getElementById('pop-keeper-name').value.trim();
+    var note = document.getElementById('pop-keeper-note').value.trim();
+    if (!name || !note) { alert('Keeper identity and note are required.'); return; }
+    document.getElementById('pop-approve-modal').style.display = 'none';
+    var manual = document.getElementById('manual-count').value.trim();
+    var entry = name + ' · ' + new Date().toISOString() + ' · Piranha-Count v3.1 · ' + note + (manual ? (' · manual cross-check: ' + manual) : '');
+    document.getElementById('pop-audit-list').innerHTML += '<div class="badge" style="display:block; margin-bottom:4px;">' + entry + '</div>';
+  });
+
+  (function () {
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) { showScreen(hash); }
+  })();
 </script>
 </body>
 </html>

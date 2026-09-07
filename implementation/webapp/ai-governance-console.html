@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Governance Console</title>
+<link rel="stylesheet" href="/shared/design-system.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="/index.html"><span class="brand-glyph" style="background:linear-gradient(135deg,var(--ai),#4C1D95);"></span> AI Governance Console — Von Digitalis Estates</a>
+  <div class="topbar-meta">
+    <span class="badge" id="who-badge">…</span>
+    <button class="btn" id="accounts-link">Staff Accounts</button>
+  </div>
+</div>
+
+<div class="page" id="registry-view">
+  <div class="region">
+    <div class="region-label">Kpis</div>
+    <div class="kpi" id="kpi-row">
+      <div class="kpi-card"><div class="skeleton" style="height:40px;width:40px;border-radius:10px;"></div><div><div class="kpi-label">Loading…</div></div></div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Model registry — golden-set &amp; drift status</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">No model change reaches production without passing its golden-set suite (ADR020). Click a model to see its full test-result analysis and deploy history.</p>
+    <div id="model-list"></div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Deploy gate log — all models</div>
+    <div id="global-log"></div>
+  </div>
+</div>
+
+<div class="page" id="model-view" style="display:none;">
+  <div class="breadcrumb"><a href="#" id="back-to-registry">Model Registry</a> / <span id="model-title"></span></div>
+  <div class="region"><div class="region-label">Latest golden-set result</div><div id="model-latest-run"></div></div>
+  <div class="region label-ai" id="model-categories-region" style="display:none;">
+    <div class="region-label">Test result analysis (ADR011)</div>
+    <div id="model-categories"></div>
+  </div>
+  <div class="region"><div class="region-label">Deploy history</div><div id="model-deploy-log"></div></div>
+  <div class="region" id="override-region" style="display:none;">
+    <div class="region-label">Override log</div>
+    <div id="model-overrides"></div>
+  </div>
+  <div style="display:flex; gap:12px; margin-top:8px;">
+    <button class="btn" id="back-btn">← Back to registry</button>
+    <button class="btn primary" id="promote-btn" style="display:none;">Promote to production</button>
+    <button class="btn danger" id="override-btn" style="display:none;">Request override</button>
+  </div>
+</div>
+
+<div class="page" id="accounts-view" style="display:none;">
+  <div class="breadcrumb"><a href="#" id="back-to-registry-2">Model Registry</a> / Staff Accounts</div>
+  <div class="region">
+    <div class="region-label">Staff</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Keep the role list minimal at launch (ADR016 advice).</p>
+    <div id="staff-list"></div>
+  </div>
+  <div class="region">
+    <div class="region-label">Invite staff member</div>
+    <form id="invite-form" class="stack" style="max-width:340px;">
+      <div class="field"><label>Email</label><input type="email" id="invite-email" required></div>
+      <div class="field"><label>Role</label>
+        <select id="invite-role">
+          <option value="keeper">Keeper</option>
+          <option value="operations">Operations</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button class="btn primary" type="submit">Add staff member</button>
+    </form>
+  </div>
+</div>
+
+<div id="promote-modal" class="overlay">
+  <div class="modal-card">
+    <div class="region-label">Promote to production</div>
+    <p id="promote-text"></p>
+    <div class="field"><label>Note</label><textarea id="promote-note" rows="2"></textarea></div>
+    <div style="display:flex; gap:10px; margin-top:14px;">
+      <button class="btn primary" id="promote-confirm">Confirm promotion</button>
+      <button class="btn" id="promote-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="override-modal" class="overlay">
+  <div class="modal-card">
+    <div class="region-label">Override blocked deploy</div>
+    <p>This model's latest golden-set run failed. Deploying anyway is logged and attributed — not a silent bypass (ADR020).</p>
+    <div class="field"><label>Justification (required)</label><textarea id="override-justification" rows="3"></textarea></div>
+    <div class="field error-text" id="override-error" style="display:none;"></div>
+    <div style="display:flex; gap:10px; margin-top:14px;">
+      <button class="btn danger" id="override-confirm">Confirm override &amp; deploy</button>
+      <button class="btn" id="override-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { api, toast, requireRole, escapeHtml, onClickBusy, ensureDemoSession } from '/shared/api.js';
+
+await ensureDemoSession();
+const user = requireRole('admin');
+if (user) {
+  document.getElementById('who-badge').textContent = `Role: Admin — ${user.displayName}`;
+  init();
+}
+
+function statusBadge(status) {
+  const map = { production: 'ok', candidate: 'warn', blocked: 'danger', retired: '' };
+  const label = status[0].toUpperCase() + status.slice(1);
+  return `<span class="badge ${map[status] || ''}">${label}</span>`;
+}
+
+async function init() {
+  await loadRegistry();
+  document.getElementById('accounts-link').addEventListener('click', showAccounts);
+  document.getElementById('back-to-registry').addEventListener('click', (e) => { e.preventDefault(); showRegistry(); });
+  document.getElementById('back-to-registry-2').addEventListener('click', (e) => { e.preventDefault(); showRegistry(); });
+  document.getElementById('back-btn').addEventListener('click', showRegistry);
+  document.getElementById('invite-form').addEventListener('submit', onInvite);
+}
+
+function showRegistry() {
+  document.getElementById('registry-view').style.display = '';
+  document.getElementById('model-view').style.display = 'none';
+  document.getElementById('accounts-view').style.display = 'none';
+  loadRegistry();
+}
+
+async function showAccounts() {
+  document.getElementById('registry-view').style.display = 'none';
+  document.getElementById('model-view').style.display = 'none';
+  document.getElementById('accounts-view').style.display = '';
+  await loadStaff();
+}
+
+async function loadRegistry() {
+  const models = await api('GET', '/ai-governance/models');
+  const inProd = models.filter((m) => m.status === 'production').length;
+  const blocked = models.filter((m) => m.status === 'blocked').length;
+  const drifting = models.filter((m) => m.drift_status !== 'nominal').length;
+
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi-card"><span class="kpi-icon green">OK</span><div><div class="kpi-label">Models in production</div><div class="kpi-value">${inProd}</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon red">BL</span><div><div class="kpi-label">Deploys blocked</div><div class="kpi-value">${blocked}</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon amber">DR</span><div><div class="kpi-label">Flagged for drift</div><div class="kpi-value">${drifting}</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon purple">GS</span><div><div class="kpi-label">Models tracked</div><div class="kpi-value">${models.length}</div></div></div>
+  `;
+
+  const list = document.getElementById('model-list');
+  list.innerHTML = models.map((m) => `
+    <div class="row ${m.status === 'blocked' ? 'critical' : m.drift_status === 'watch' ? 'warn' : ''}" style="cursor:pointer;" data-id="${m.id}">
+      <span style="font-weight:700; min-width:220px;">${escapeHtml(m.name)} <span class="tag tag-ok" style="margin-left:6px;">${m.governing_adr}</span></span>
+      <span style="color:var(--muted); font-size:12.5px;">${m.version} · ${statusBadge(m.status)}</span>
+      <span class="badge ${m.status === 'blocked' ? 'danger' : 'ok'}">Golden-set: ${m.golden_set_score ? (m.status === 'blocked' ? 'Fail' : 'Pass') + ' (' + m.golden_set_score + ' / ' + m.golden_set_threshold + ')' : 'No run yet'}</span>
+      <span class="tag ${m.drift_status === 'nominal' ? 'tag-ok' : 'tag-warn'}">Drift: ${m.drift_status}</span>
+    </div>
+  `).join('');
+  list.querySelectorAll('.row').forEach((row) => row.addEventListener('click', () => openModel(row.dataset.id)));
+
+  const logs = await Promise.all(models.slice(0, 6).map((m) => api('GET', `/ai-governance/models/${m.id}`).then((d) => d.deployLog.map((l) => ({ ...l, modelName: m.name, modelVersion: m.version }))).catch(() => [])));
+  const flat = logs.flat().sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
+  document.getElementById('global-log').innerHTML = flat.length ? flat.map((l) => `
+    <div class="row" style="margin-bottom:6px;">
+      <span style="font-weight:600; min-width:230px;">${escapeHtml(l.modelName)} ${l.modelVersion}</span>
+      <span class="badge ${l.result === 'pass' ? 'ok' : 'danger'}">${l.result === 'pass' ? 'Pass' : 'Fail'}</span>
+      <span style="color:var(--muted); font-size:12px;">${new Date(l.created_at).toLocaleString()} · ${l.promoted_by_name ? 'reviewed & promoted by ' + escapeHtml(l.promoted_by_name) : 'blocked'}</span>
+    </div>`).join('') : '<div class="empty-state">No deploy history yet.</div>';
+}
+
+let currentModelId = null;
+
+async function openModel(id) {
+  currentModelId = id;
+  document.getElementById('registry-view').style.display = 'none';
+  document.getElementById('model-view').style.display = '';
+  const detail = await api('GET', `/ai-governance/models/${id}`);
+  const { model, latestRun, categories, deployLog, overrides } = detail;
+
+  document.getElementById('model-title').textContent = `${model.name} ${model.version}`;
+
+  document.getElementById('model-latest-run').innerHTML = latestRun ? `
+    <div class="row ${latestRun.passed ? 'ok' : 'critical'}">
+      <span style="font-weight:700;">${model.version}</span>
+      <span class="badge ${latestRun.passed ? 'ok' : 'danger'}">${latestRun.passed ? 'Pass' : 'Fail'} — ${latestRun.overall_score} / threshold ${model.golden_set_threshold}</span>
+      ${!latestRun.passed ? '<span class="tag tag-danger">Blocked — override required</span>' : ''}
+    </div>
+  ` : '<div class="empty-state">No golden-set run on record.</div>';
+
+  const catRegion = document.getElementById('model-categories-region');
+  if (categories.length) {
+    catRegion.style.display = '';
+    document.getElementById('model-categories').innerHTML = `
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:8px; font-size:12.5px;">
+        <div class="kpi-label">Category</div><div class="kpi-label">Tests</div><div class="kpi-label">Pass</div><div class="kpi-label">Fail</div><div class="kpi-label">Score</div>
+        ${categories.map((c) => `<div>${escapeHtml(c.category)}</div><div>${c.tests_total}</div><div>${c.tests_passed}</div><div>${c.tests_total - c.tests_passed}</div><div style="font-weight:600; color:${c.score >= 0.85 ? '#15803D' : c.score >= 0.75 ? '#B45309' : '#B91C1C'}">${c.score}</div>`).join('')}
+      </div>`;
+  } else {
+    catRegion.style.display = 'none';
+  }
+
+  document.getElementById('model-deploy-log').innerHTML = deployLog.length ? deployLog.map((l) => `
+    <div class="row" style="margin-bottom:6px;">
+      <span style="font-weight:600;">${l.result === 'pass' ? 'Pass' : 'Fail'}</span>
+      <span style="color:var(--muted); font-size:12px;">${new Date(l.created_at).toLocaleString()} ${l.promoted_by_name ? '· reviewed & promoted by ' + escapeHtml(l.promoted_by_name) : ''}</span>
+    </div>`).join('') : '<div class="empty-state">No deploy history yet.</div>';
+
+  const overrideRegion = document.getElementById('override-region');
+  if (overrides.length) {
+    overrideRegion.style.display = '';
+    document.getElementById('model-overrides').innerHTML = overrides.map((o) => `<div class="badge" style="display:block; margin-bottom:4px; font-family:var(--mono);">${escapeHtml(o.approver_name)} · ${new Date(o.created_at).toLocaleString()} · score ${o.golden_set_score_at_override} · ${escapeHtml(o.justification)}</div>`).join('');
+  } else {
+    overrideRegion.style.display = 'none';
+  }
+
+  const promoteBtn = document.getElementById('promote-btn');
+  const overrideBtn = document.getElementById('override-btn');
+  promoteBtn.style.display = latestRun && latestRun.passed && model.status !== 'production' ? '' : 'none';
+  overrideBtn.style.display = latestRun && !latestRun.passed ? '' : 'none';
+}
+
+document.getElementById('promote-btn').addEventListener('click', () => {
+  document.getElementById('promote-text').textContent = `Promote ${document.getElementById('model-title').textContent} to production?`;
+  document.getElementById('promote-modal').classList.add('open');
+});
+document.getElementById('promote-cancel').addEventListener('click', () => document.getElementById('promote-modal').classList.remove('open'));
+onClickBusy(document.getElementById('promote-confirm'), 'Promoting…', async () => {
+  await api('POST', `/ai-governance/models/${currentModelId}/promote`, { note: document.getElementById('promote-note').value });
+  document.getElementById('promote-modal').classList.remove('open');
+  toast('Promoted to production.');
+  await openModel(currentModelId);
+});
+
+document.getElementById('override-btn').addEventListener('click', () => document.getElementById('override-modal').classList.add('open'));
+document.getElementById('override-cancel').addEventListener('click', () => document.getElementById('override-modal').classList.remove('open'));
+onClickBusy(document.getElementById('override-confirm'), 'Submitting…', async () => {
+  const justification = document.getElementById('override-justification').value.trim();
+  const errEl = document.getElementById('override-error');
+  if (!justification) {
+    errEl.textContent = 'A justification is required.';
+    errEl.style.display = '';
+    return;
+  }
+  errEl.style.display = 'none';
+  await api('POST', `/ai-governance/models/${currentModelId}/override`, { justification });
+  document.getElementById('override-modal').classList.remove('open');
+  toast('Override recorded — model promoted.');
+  await openModel(currentModelId);
+});
+
+async function loadStaff() {
+  const staff = await api('GET', '/staff');
+  document.getElementById('staff-list').innerHTML = staff.length ? staff.map((s) => `
+    <div class="row">
+      <span style="font-weight:600; min-width:220px;">${escapeHtml(s.display_name)}</span>
+      <span class="badge ${s.role === 'admin' ? '' : s.role === 'operations' ? 'ai' : 'badge-blue'}" style="${s.role === 'admin' ? 'background:#1B2437;color:#fff;' : ''}">${s.role}</span>
+      <span style="color:var(--muted); font-size:12px;">${escapeHtml(s.scope_note || '')}</span>
+    </div>`).join('') : '<div class="empty-state">No staff yet.</div>';
+}
+
+async function onInvite(e) {
+  e.preventDefault();
+  const email = document.getElementById('invite-email').value.trim();
+  const role = document.getElementById('invite-role').value;
+  try {
+    await api('POST', '/staff', { email, role });
+    toast('Staff member added.');
+    document.getElementById('invite-email').value = '';
+    await loadStaff();
+  } catch (err) {
+    toast(err.message, { error: true });
+  }
+}
+</script>
+</body>
+</html>

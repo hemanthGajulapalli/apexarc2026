@@ -69,12 +69,20 @@ number on the operations dashboard:
 ### What operations staff actually see
 
 The aggregated data isn't useful sitting in a database — it needs to
-reach a human who can act on it. The mockup below shows the kind of
-view operations staff would use during a shift: which zones are
-busiest right now, and which zones show a rising or declining trend
-worth a longer-term look.
+reach a human who can act on it. The screenshots below are the actual
+Ops Dashboard wireframe (`wireframes/ops-dashboard-wireframe.html`),
+not a static mockup: live KPIs and zone popularity on the Estate
+Overview screen, and same-day forecasting plus specific staff/
+investment recommendations — gated behind mandatory human approval —
+on the Decision Panel (ADR021).
 
-![Operations dashboard mockup showing visitor KPIs, a zone-popularity chart, animal health alerts, and a 7-day investment-priority table with trend and recommendation columns](../assets/admin-dashboard.svg)
+![Ops Dashboard Estate Overview screenshot showing forecast/live/MAPE/peak-hour KPIs, a 24-hour live-vs-forecast popularity chart, ranked hot zones with drill-down, and an alert strip for edge uplink, model drift, and guardrail status](../assets/ops-dashboard-overview.png)
+
+![Ops Dashboard Decision Panel screenshot showing staff-deploy recommendations with impact, cost, and confidence, one escalated to manual review, one blocked by stale zone data, each requiring explicit approval before being committed](../assets/ops-dashboard-decision-panel.png)
+
+Animal health alerts are **not** shown here — per ADR016's RBAC split,
+those land in the separate Keeper-scoped Vet Console (see UC02), not
+the shared Operations/Admin dashboard.
 
 ## AI Involvement
 This use case is primarily a **data/analytics pipeline** rather than a

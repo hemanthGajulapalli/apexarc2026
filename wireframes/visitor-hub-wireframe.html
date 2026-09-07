@@ -103,12 +103,30 @@ input[type=text],input[type=number],input[type=date]{ border:1px solid var(--bor
 
 <div id="app">
 
-  <section class="screen active" id="screen-hub">
+  <section class="screen active" id="screen-signin">
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Von Digitalis Estates</div>
+  </div>
+
+  <div class="region" style="max-width:420px; margin:60px auto;">
+    <div class="region-label">Sign in</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Visitor identity is kept separate from ticket payment (ADR016) — sign in once, then buy tickets or manage your account below.</p>
+    <div class="stack">
+      <button class="btn signin-btn" data-provider="Google" style="width:100%; justify-content:center;">Continue with Google</button>
+      <button class="btn signin-btn" data-provider="Apple" style="width:100%; justify-content:center;">Continue with Apple</button>
+      <button class="btn signin-btn" data-provider="Estate Account" style="width:100%; justify-content:center;">Continue with Estate Account</button>
+    </div>
+  </div>
+  </section>
+
+  <section class="screen" id="screen-hub">
   <div class="topbar">
     <div class="brand"><span class="brand-glyph"></span> Customer App — Von Digitalis Estates</div>
     <div class="topbar-meta">
+      <span class="badge badge-blue" id="signin-status" style="display:none;">Signed in</span>
       <span class="badge">2026-09-05</span>
       <span class="badge ai">Ops AI v7.2 · popularity live</span>
+      <button class="btn" data-nav="screen-account">My Account</button>
     </div>
   </div>
 
@@ -265,7 +283,11 @@ input[type=text],input[type=number],input[type=date]{ border:1px solid var(--bor
 
   <div class="region label-ai">
     <div class="region-label">Personalized offers (Customer GenAI)</div>
-    <div class="stack">
+    <div style="display:flex; align-items:center; gap:8px; margin:-4px 0 12px; flex-wrap:wrap;">
+      <span class="tag tag-ai">Phase Two — pilot</span>
+      <span style="font-size:12px; color:var(--muted);">Gated on real popularity + ticketing history existing first (ADR008). <a data-nav="screen-account">Manage in Account settings →</a></span>
+    </div>
+    <div class="stack" id="personalized-offers">
       <div class="offer-card">
         <div class="offer-title">Lunch deal — 20% off at Terra Domes cafe</div>
         <div class="offer-desc">Valid with today's ticket. Grounded in family-pass behavior.</div>
@@ -283,10 +305,47 @@ input[type=text],input[type=number],input[type=date]{ border:1px solid var(--bor
         <div class="grounded">Customer GenAI · AI-generated · grounded in reservation data + live wait times · confidence 91%</div>
       </div>
     </div>
+    <p id="personalization-off-note" style="display:none; color:var(--muted); font-size:13px; margin:0;">Personalization is off — falling back to your Phase One loyalty benefit only (ADR018). <a data-nav="screen-account">Turn it back on →</a></p>
   </div>
 
   <div style="display:flex; gap:12px;">
     <button class="btn primary" data-nav="screen-hub">View another day →</button>
+  </div>
+  </section>
+
+  <section class="screen" id="screen-account">
+  <div class="breadcrumb"><a data-nav="screen-hub">Ticket Hub</a> / Account &amp; Loyalty</div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Account &amp; Loyalty</div>
+    <div class="topbar-meta">
+      <span class="badge badge-blue" id="signin-status-2" style="display:none;">Signed in</span>
+    </div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Digital loyalty card</div>
+    <div style="border-radius:12px; background:linear-gradient(135deg,#1B2437,#111827); color:#fff; padding:20px; max-width:360px; display:flex; flex-direction:column; gap:28px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="mono" style="font-size:12px; letter-spacing:.05em;">VON DIGITALIS ESTATES</div>
+        <span class="badge ok" style="background:rgba(255,255,255,.15); color:#fff;">Active</span>
+      </div>
+      <div>
+        <div style="font-size:11px; opacity:.7; text-transform:uppercase; letter-spacing:.05em;">Member since</div>
+        <div style="font-size:15px; font-weight:700;">Sep 2026</div>
+      </div>
+    </div>
+    <p style="color:var(--muted); font-size:13px; margin:14px 0 0;">Your next visit: <b>10% off</b>, auto-applied at checkout — no personalization logic involved (Phase One, ADR008).</p>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Personalization &amp; privacy</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">We use your past visits and estate-wide popularity trends to suggest recommendations at checkout. Your individual location is never stored beyond aggregation.</p>
+    <button class="btn primary" id="personalization-toggle">Personalized recommendations: ON</button>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn" data-nav="screen-hub">← Back to Ticket Hub</button>
   </div>
   </section>
 
@@ -375,6 +434,31 @@ input[type=text],input[type=number],input[type=date]{ border:1px solid var(--bor
 
   function showStale() { document.getElementById('stale-notice').classList.add('pulse'); }
   setTimeout(showStale, 1200);
+
+  document.querySelectorAll('.signin-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var provider = btn.getAttribute('data-provider');
+      ['signin-status', 'signin-status-2'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) { el.textContent = 'Signed in · ' + provider; el.style.display = 'inline-block'; }
+      });
+      showScreen('screen-hub');
+    });
+  });
+
+  var personalizationOn = true;
+  document.getElementById('personalization-toggle').addEventListener('click', function () {
+    personalizationOn = !personalizationOn;
+    this.textContent = 'Personalized recommendations: ' + (personalizationOn ? 'ON' : 'OFF');
+    this.classList.toggle('primary', personalizationOn);
+    document.getElementById('personalized-offers').style.display = personalizationOn ? '' : 'none';
+    document.getElementById('personalization-off-note').style.display = personalizationOn ? 'none' : 'block';
+  });
+
+  (function () {
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) { showScreen(hash); }
+  })();
 </script>
 </body>
 </html>
