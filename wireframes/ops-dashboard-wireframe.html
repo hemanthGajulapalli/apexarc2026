@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ops Dashboard — Wireframe</title>
+<style>:root{
+  --canvas:#F4F6FB; --surface:#FFFFFF; --ink:#1B2437; --muted:#5B6B8C; --border:#E3E9F3;
+  --primary:#2563EB; --primary-deep:#1D4ED8; --primary-tint:#EAF1FE;
+  --ai:#7C3AED; --ai-tint:#F0EAFF;
+  --ok:#16A34A; --ok-tint:#E7F6EC;
+  --warn:#D97706; --warn-tint:#FEF3C7;
+  --danger:#DC2626; --danger-tint:#FEE2E2;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:Consolas,Menlo,monospace;
+  --shadow:0 1px 3px rgba(27,36,55,.06),0 4px 14px rgba(27,36,55,.06);
+  --radius:12px;
+}
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:var(--sans); background:var(--canvas); color:var(--ink); font-size:14px; line-height:1.45; }
+.screen{ display:none; max-width:1140px; margin:0 auto; padding:24px 20px 56px; }
+.screen.active{ display:block; }
+.topbar{ position:sticky; top:0; z-index:20; background:var(--surface); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+.brand-glyph{ width:26px; height:26px; border-radius:7px; background:linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.topbar-meta{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.region{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin:16px 0; box-shadow:var(--shadow); }
+.region-label{ font-size:11px; letter-spacing:.9px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:12px; padding-left:10px; border-left:3px solid var(--primary); }
+.region.label-ai .region-label{ border-left-color:var(--ai); }
+.breadcrumb{ color:var(--muted); font-size:13px; margin:4px 2px 12px; }
+.breadcrumb a{ color:var(--primary); cursor:pointer; font-weight:600; text-decoration:none; }
+.breadcrumb a:hover{ text-decoration:underline; }
+.btn{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:var(--surface); color:var(--ink); padding:8px 14px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; transition:background .15s,border-color .15s,color .15s; }
+.btn:hover{ background:var(--primary-tint); border-color:var(--primary); color:var(--primary-deep); }
+.btn.primary{ background:var(--primary); border-color:var(--primary); color:#fff; }
+.btn.primary:hover{ background:var(--primary-deep); border-color:var(--primary-deep); color:#fff; }
+.badge{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; background:#EEF1F7; color:var(--muted); }
+.badge.badge-blue{ background:var(--primary-tint); color:var(--primary-deep); }
+.badge.ai{ background:var(--ai-tint); color:#6D28D9; }
+.badge.ok{ background:var(--ok-tint); color:#15803D; }
+.tag{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:600; }
+.tag::before{ content:""; width:8px; height:8px; border-radius:50%; background:currentColor; }
+.tag-ok{ background:var(--ok-tint); color:#15803D; }
+.tag-ai{ background:var(--ai-tint); color:#6D28D9; }
+.tag-warn{ background:var(--warn-tint); color:#B45309; }
+.tag-danger{ background:var(--danger-tint); color:#B91C1C; }
+.kpi{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:4px; }
+.kpi-card{ display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
+.kpi-icon{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:16px; }
+.kpi-icon.blue{ background:var(--primary); }
+.kpi-icon.purple{ background:var(--ai); }
+.kpi-icon.green{ background:var(--ok); }
+.kpi-icon.amber{ background:var(--warn); }
+.kpi-label{ color:var(--muted); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; }
+.kpi-value{ font-family:var(--mono); font-size:24px; font-weight:700; line-height:1.25; }
+.chart-obs{ stroke:var(--primary); stroke-width:2.5; fill:none; }
+.chart-forecast{ stroke:var(--ai); stroke-width:2.5; fill:none; stroke-dasharray:6 5; }
+.chart-now-dot{ fill:var(--primary); }
+.chart-now-guide{ stroke:var(--muted); stroke-dasharray:3 3; stroke-width:1; }
+.chart-axis{ stroke:var(--muted); stroke-width:1; }
+.chart-tick{ fill:var(--muted); font-family:var(--mono); font-size:10px; }
+.chart-caption{ font-size:12px; color:var(--muted); margin-top:6px; }
+.zone-row{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; transition:background .15s,border-color .15s,box-shadow .15s; }
+.zone-row:hover{ background:var(--primary-tint); border-color:var(--primary); box-shadow:var(--shadow); }
+.zone-rank{ min-width:26px; height:26px; border-radius:50%; background:#EFF3FB; color:var(--primary-deep); display:grid; place-items:center; font-weight:700; font-size:12px; }
+.zone-name{ font-weight:600; min-width:150px; }
+.zone-meta{ color:var(--muted); font-size:13px; }
+.conf-bar{ width:96px; height:6px; border-radius:3px; background:#EDF0F7; overflow:hidden; }
+.conf-fill{ height:100%; border-radius:3px; background:var(--ai); }
+.trend-up{ color:#15803D; font-weight:700; }
+.trend-down{ color:#B91C1C; font-weight:700; }
+.trend-flat{ color:var(--muted); }
+.row-btn{ margin-left:auto; }
+.alert-danger{ display:flex; align-items:center; gap:8px; background:var(--danger-tint); color:#B91C1C; border:1px solid #FECACA; border-radius:10px; padding:10px 14px; font-weight:600; margin-bottom:14px; }
+#stale-banner{ display:none; }
+.gauge-track{ height:10px; border-radius:5px; background:#EDF0F7; overflow:hidden; margin-top:8px; }
+.gauge-fill{ height:100%; border-radius:5px; background:var(--warn); }
+.gauge-cap{ display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:6px; }
+.chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:8px; font-size:12.5px; border:1px solid var(--border); background:var(--surface); }
+.chip::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--primary); }
+.tabs{ display:inline-flex; gap:4px; background:#EDF0F7; padding:4px; border-radius:10px; margin-bottom:16px; }
+.tab{ border:none; background:transparent; padding:8px 18px; border-radius:8px; font-weight:600; color:var(--muted); cursor:pointer; font:inherit; }
+.tab.primary{ background:var(--primary); color:#fff; }
+.rec-list{ display:flex; flex-direction:column; gap:10px; }
+.rec-row{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; cursor:pointer; transition:border-color .15s,box-shadow .15s; }
+.rec-row:hover{ border-color:var(--primary); box-shadow:var(--shadow); }
+.rec-row.low-conf{ background:var(--warn-tint); border-color:#FDE68A; }
+.rec-row.stale-block{ background:var(--danger-tint); color:var(--muted); cursor:not-allowed; opacity:.85; }
+.rec-title{ font-weight:600; }
+.rec-meta{ margin-top:4px; font-size:12.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.overlay{ position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; z-index:50; }
+.modal-card{ background:var(--surface); border-radius:14px; box-shadow:0 20px 50px rgba(15,23,42,.25); max-width:460px; margin:10vh auto; padding:22px; }
+.audit-card{ background:#F8F9FC; border:1px solid var(--border); border-radius:10px; padding:6px 10px; }
+.audit-entry{ font-family:var(--mono); font-size:12px; color:#3D5278; padding:8px 4px; border-bottom:1px dashed var(--border); }
+.audit-entry:last-child{ border-bottom:none; }
+#audit-list .badge{ font-family:var(--mono); font-size:12px; color:#3D5278; padding:8px 4px 7px; border-bottom:1px dashed var(--border); background:transparent; border-radius:0; }
+input[type=text]{ border:1px solid var(--border); border-radius:8px; padding:9px 12px; font:inherit; color:var(--ink); width:100%; box-sizing:border-box; }
+input[type=text]:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-tint); }
+.stack > * + *{ margin-top:10px; }</style>
+</head>
+<body>
+
+<div id="app">
+  <section class="screen active" id="screen-overview">
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Ops Dashboard — Von Digitalis Estates</div>
+    <div class="topbar-meta">
+      <input type="text" value="2026-09-05" aria-label="Date" style="width:120px;">
+      <span class="badge ai" id="model-badge">Ops AI v7.2 · healthy · data 2min old</span>
+    </div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Kpis</div>
+    <div class="kpi">
+      <div class="kpi-card">
+        <span class="kpi-icon purple">F</span>
+        <div><div class="kpi-label">Forecast today</div><div class="kpi-value" id="kpi-forecast">4,820</div></div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-icon blue">L</span>
+        <div><div class="kpi-label">Live now</div><div class="kpi-value" id="kpi-live">1,673</div></div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-icon green">A</span>
+        <div><div class="kpi-label">Forecast accuracy (MAPE)</div><div class="kpi-value" id="kpi-accuracy">6.2%</div></div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-icon amber">P</span>
+        <div><div class="kpi-label">Peak hour prediction</div><div class="kpi-value" id="kpi-peak">14:00–15:00</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">24h popularity: live vs forecast</div>
+    <svg width="100%" height="160" viewBox="0 0 900 160" role="img" aria-label="placeholder popularity chart">
+      <line class="chart-axis" x1="40" y1="130" x2="880" y2="130"/>
+      <line class="chart-now-guide" x1="700" y1="10" x2="700" y2="130"/>
+      <path class="chart-obs" d="M60 120 L140 112 L220 96 L300 70 L380 48 L460 40 L540 44 L620 60 L700 78"/>
+      <circle class="chart-now-dot" cx="700" cy="78" r="4"/>
+      <path class="chart-forecast" d="M700 78 L780 92 L860 100"/>
+      <text class="chart-tick" x="50" y="145">08:00</text>
+      <text class="chart-tick" x="700" y="145">16:00</text>
+      <text class="chart-tick" x="830" y="145">18:00</text>
+    </svg>
+    <div class="chart-caption">solid = observed · dashed = AI forecast</div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Hot zones — predicted occupancy</div>
+    <div id="hot-zone-list">
+      <div class="zone-row" data-zone="Piranha Falls">
+        <span class="zone-rank">1</span>
+        <span class="zone-name">Piranha Falls</span>
+        <span class="zone-meta">61% occupancy</span>
+        <span class="conf-bar"><span class="conf-fill" style="width:61%"></span></span>
+        <span class="trend-up">▲ up</span>
+        <button class="btn row-btn" data-nav="screen-zone">Drill down →</button>
+      </div>
+      <div class="zone-row" data-zone="Raptor Aviary">
+        <span class="zone-rank">2</span>
+        <span class="zone-name">Raptor Aviary</span>
+        <span class="zone-meta">48% occupancy</span>
+        <span class="conf-bar"><span class="conf-fill" style="width:48%"></span></span>
+        <span class="trend-flat">→ flat</span>
+        <button class="btn row-btn" data-nav="screen-zone">Drill down →</button>
+      </div>
+      <div class="zone-row" data-zone="Terra Domes">
+        <span class="zone-rank">3</span>
+        <span class="zone-name">Terra Domes</span>
+        <span class="zone-meta">39% occupancy</span>
+        <span class="conf-bar"><span class="conf-fill" style="width:39%"></span></span>
+        <span class="trend-down">▼ down</span>
+        <button class="btn row-btn" data-nav="screen-zone">Drill down →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Alert strip</div>
+    <div id="alert-strip" style="display:flex; gap:10px; flex-wrap:wrap;">
+      <span class="tag tag-ok">Edge uplink: current</span>
+      <span class="tag tag-ok">Model drift: none flagged</span>
+      <span class="tag tag-ok">Guardrails: pass</span>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px; margin-top:16px;">
+    <button class="btn primary" data-nav="screen-decisions">Review decisions →</button>
+  </div>
+  </section>
+  <section class="screen" id="screen-zone">
+  <div class="breadcrumb"><a data-nav="screen-overview">Estate Overview</a> / <span id="zone-title">Piranha Falls</span></div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Zone drill-down — Piranha Falls</div>
+    <div class="topbar-meta">
+      <span class="badge badge-blue">live <b id="zone-live">418 now</b></span>
+      <span class="badge ai">forecast <b id="zone-forecast">410–470</b></span>
+    </div>
+  </div>
+
+  <div id="stale-banner" class="alert-danger">Stale data: edge uplink lagging &gt;5 min — latest telemetry shown for 09:00.</div>
+
+  <div class="region">
+    <div class="region-label">Occupancy vs capacity</div>
+    <span class="badge badge-blue">gauge placeholder — <b id="zone-gauge">61% of capacity</b></span>
+    <button class="btn" id="toggle-7d">Next 7 days</button>
+    <div class="gauge-track"><div class="gauge-fill" style="width:61%"></div></div>
+    <div class="gauge-cap"><span>Piranha Falls</span><span>61% of capacity</span></div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Hourly: live vs forecast</div>
+    <svg width="100%" height="120" viewBox="0 0 900 120" role="img" aria-label="placeholder zone chart">
+      <line class="chart-axis" x1="40" y1="95" x2="880" y2="95"/>
+      <line class="chart-now-guide" x1="690" y1="10" x2="690" y2="95"/>
+      <path class="chart-obs" d="M60 85 L150 70 L240 50 L330 30 L420 22 L510 26 L600 40 L690 55"/>
+      <circle class="chart-now-dot" cx="690" cy="55" r="4"/>
+      <path class="chart-forecast" d="M690 55 L780 68 L860 76"/>
+      <text class="chart-tick" x="50" y="108">08:00</text>
+      <text class="chart-tick" x="830" y="108">18:00</text>
+    </svg>
+    <div class="chart-caption">solid = observed · dashed = AI forecast</div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Drivers (Ops AI attribution)</div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <span class="chip">Weather: sunny, 24°C — +12% vs baseline</span>
+      <span class="chip">Promotion: "family pass lunch" active — +6%</span>
+      <span class="chip">Seasonal baseline — +4%</span>
+      <span class="chip">Model version: Ops AI v7.2</span>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn primary js-preselect" data-action="staff">Deploy staff here</button>
+    <button class="btn primary js-preselect" data-action="invest">Invest in this zone</button>
+  </div>
+  </section>
+  <section class="screen" id="screen-decisions">
+  <div class="breadcrumb"><a data-nav="screen-overview">Estate Overview</a> / Decision Panel</div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Decision panel</div>
+    <div class="topbar-meta">
+      <span class="badge ai">Decisions based on Ops AI forecast v7.2 · data 2min old · zone: <b id="decision-zone">Piranha Falls</b></span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab primary" id="tab-deploy">Staff Deploy</button>
+    <button class="tab" id="tab-invest">Invest (Capex)</button>
+  </div>
+
+  <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+    <div style="flex:2; min-width:320px;">
+      <div class="region label-ai">
+        <div class="region-label">Recommendations — Staff Deploy</div>
+        <div id="rec-list" class="rec-list">
+          <div class="rec-row" data-pool="staff">
+            <div class="rec-title"><b>Move 3 hosts to Piranha Falls 14:00–16:00</b></div>
+            <div class="rec-meta">impact: +1,120 visitors served · cost: $0 (reallocation) · confidence ▓▓▓▓░ · v7.2 <button class="btn" onclick="void 0">Why?</button> <span class="badge">Pending approval</span></div>
+          </div>
+          <div class="rec-row low-conf" data-pool="staff">
+            <div class="rec-title"><b>Open Raptor Aviary overflow entrance 13:00</b></div>
+            <div class="rec-meta">impact: −40 min queue · cost: $0 · confidence ▓▓░░░ · v7.1 <span class="tag tag-warn">Manual review recommended — escalated to human</span> <span class="badge">Pending approval</span></div>
+          </div>
+          <div class="rec-row stale-block" data-pool="staff">
+            <div class="rec-title"><b>Add gates at Terra Domes 15:00</b></div>
+            <div class="rec-meta">blocked: stale zone data</div>
+          </div>
+          <div class="rec-row" data-pool="invest">
+            <div class="rec-title"><b>Invest $180k: water feature at Piranha Falls</b></div>
+            <div class="rec-meta">predicted lift: +8% yearly visitors · payback: 4 yr · confidence ▓▓▓▓░ · v7.2 <button class="btn" onclick="void 0">Why?</button> <span class="badge">Pending approval</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1; min-width:280px;">
+      <div class="region">
+        <div class="region-label">Selected action detail</div>
+        <div id="rec-detail">Select a recommendation to see rationale, confidence, and audit trail.<br><code>(placeholder)</code></div>
+      </div>
+      <div class="region">
+        <div class="region-label">Audit trail</div>
+        <div class="audit-card"><div id="audit-list">(empty)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="approve-modal" class="overlay">
+    <div class="modal-card">
+      <div class="region-label">Confirm action</div>
+      <p id="approve-text">Approve this action?</p>
+      <div class="stack">
+        <input type="text" id="approver-name" placeholder="Approver identity (required)">
+        <input type="text" id="approver-comment" placeholder="Reason / comment (required)">
+      </div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn primary" id="confirm-btn">Approve</button>
+        <button class="btn" id="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  </section>
+</div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) {
+      s.classList.toggle('active', s.id === id);
+    });
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('[data-nav]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      showScreen(el.getAttribute('data-nav'));
+    });
+  });
+  function openZone(name) {
+    document.getElementById('zone-title').textContent = name;
+    document.getElementById('zone-live').textContent = '418 now';
+    document.getElementById('zone-forecast').textContent = '410–470';
+    document.getElementById('zone-gauge').textContent = '61% of capacity';
+    showScreen('screen-zone');
+  }
+  document.querySelectorAll('[data-zone] .btn').forEach(function (el) {
+    el.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      var row = el.closest('[data-zone]');
+      openZone(row.getAttribute('data-zone'));
+    });
+  });
+  document.getElementById('toggle-7d').addEventListener('click', function () {
+    this.textContent = this.textContent === 'Next 7 days' ? 'Today' : 'Next 7 days';
+  });
+
+  var selectedZone = 'Piranha Falls';
+  var selectedAction = 'staff';
+  document.querySelectorAll('.js-preselect').forEach(function (el) {
+    el.addEventListener('click', function () {
+      selectedZone = document.getElementById('zone-title').textContent;
+      selectedAction = el.getAttribute('data-action');
+      showScreen('screen-decisions');
+    });
+  });
+
+  function switchTab(pool) {
+    document.querySelectorAll('#rec-list .rec-row').forEach(function (r) {
+      r.style.display = r.getAttribute('data-pool') === pool ? 'block' : 'none';
+    });
+    document.getElementById('tab-deploy').classList.toggle('primary', pool === 'staff');
+    document.getElementById('tab-invest').classList.toggle('primary', pool === 'invest');
+  }
+  document.getElementById('tab-deploy').addEventListener('click', function () { switchTab('staff'); });
+  document.getElementById('tab-invest').addEventListener('click', function () { switchTab('invest'); });
+
+  var pendingRow = null;
+  document.querySelectorAll('#rec-list .rec-row').forEach(function (row) {
+    row.addEventListener('click', function () {
+      if (row.classList.contains('stale-block')) { return; }
+      pendingRow = row;
+      var text = row.textContent.replace(/Pending approval|Committed|Why?/g, '').trim();
+      document.getElementById('rec-detail').innerHTML =
+        '<b>' + row.querySelector('b').textContent + '</b><br>' +
+        '<span class="badge">' + (row.classList.contains('low-conf') ? 'low confidence — human review required' : 'auto-suggested') + '</span><br>' +
+        '<span class="badge">' + text.slice(0, 80) + '</span>';
+    });
+  });
+
+  document.getElementById('confirm-btn').addEventListener('click', function () {
+    var name = document.getElementById('approver-name').value.trim();
+    var comment = document.getElementById('approver-comment').value.trim();
+    if (!pendingRow) { return; }
+    if (!name || !comment) { alert('Approver identity and comment are required.'); return; }
+    var status = pendingRow.querySelector('.badge:last-of-type');
+    status.textContent = 'Committed'; status.classList.add('ok');
+    var entry = name + ' · ' + new Date().toISOString() + ' · Ops AI v7.2 · ' + comment;
+    document.getElementById('audit-list').innerHTML += '<div class="badge" style="display:block; margin-bottom:4px;">' + entry + '</div>';
+    document.getElementById('approve-modal').style.display = 'none';
+  });
+  document.getElementById('cancel-btn').addEventListener('click', function () {
+    document.getElementById('approve-modal').style.display = 'none';
+  });
+  document.querySelectorAll('#rec-list .rec-row:not(.stale-block)').forEach(function (row) {
+    row.addEventListener('click', function () {
+      document.getElementById('approve-text').textContent =
+        'Approve "' + row.querySelector('b').textContent.trim() + '" (' + document.getElementById('decision-zone').textContent + ')?';
+      document.getElementById('approve-modal').style.display = 'block';
+    });
+  });
+
+  document.getElementById('screen-decisions').addEventListener('click', function () {
+    document.getElementById('decision-zone').textContent = selectedZone;
+  });
+</script>
+</body>
+</html>

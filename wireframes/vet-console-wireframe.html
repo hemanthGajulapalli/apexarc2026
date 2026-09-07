@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veterinary Console — Wireframe</title>
+<style>:root{
+  --canvas:#F4F6FB; --surface:#FFFFFF; --ink:#1B2437; --muted:#5B6B8C; --border:#E3E9F3;
+  --primary:#2563EB; --primary-deep:#1D4ED8; --primary-tint:#EAF1FE;
+  --ai:#7C3AED; --ai-tint:#F0EAFF;
+  --ok:#16A34A; --ok-tint:#E7F6EC;
+  --warn:#D97706; --warn-tint:#FEF3C7;
+  --danger:#DC2626; --danger-tint:#FEE2E2;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:Consolas,Menlo,monospace;
+  --shadow:0 1px 3px rgba(27,36,55,.06),0 4px 14px rgba(27,36,55,.06);
+  --radius:12px;
+}
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:var(--sans); background:var(--canvas); color:var(--ink); font-size:14px; line-height:1.45; }
+.screen{ display:none; max-width:1140px; margin:0 auto; padding:24px 20px 56px; }
+.screen.active{ display:block; }
+.topbar{ position:sticky; top:0; z-index:20; background:var(--surface); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+.brand-glyph{ width:26px; height:26px; border-radius:7px; background:linear-gradient(135deg,var(--danger),#B91C1C); }
+.topbar-meta{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.region{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin:16px 0; box-shadow:var(--shadow); }
+.region-label{ font-size:11px; letter-spacing:.9px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:12px; padding-left:10px; border-left:3px solid var(--primary); }
+.region.label-ai .region-label{ border-left-color:var(--ai); }
+.breadcrumb{ color:var(--muted); font-size:13px; margin:4px 2px 12px; }
+.breadcrumb a{ color:var(--primary); cursor:pointer; font-weight:600; text-decoration:none; }
+.breadcrumb a:hover{ text-decoration:underline; }
+.btn{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:var(--surface); color:var(--ink); padding:8px 14px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; transition:background .15s,border-color .15s,color .15s; }
+.btn:hover{ background:var(--primary-tint); border-color:var(--primary); color:var(--primary-deep); }
+.btn.primary{ background:var(--primary); border-color:var(--primary); color:#fff; }
+.btn.primary:hover{ background:var(--primary-deep); border-color:var(--primary-deep); color:#fff; }
+.badge{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; background:#EEF1F7; color:var(--muted); }
+.badge.badge-blue{ background:var(--primary-tint); color:var(--primary-deep); }
+.badge.ai{ background:var(--ai-tint); color:#6D28D9; }
+.badge.ok{ background:var(--ok-tint); color:#15803D; }
+.tag{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:600; }
+.tag::before{ content:""; width:8px; height:8px; border-radius:50%; background:currentColor; }
+.tag-ok{ background:var(--ok-tint); color:#15803D; }
+.tag-ai{ background:var(--ai-tint); color:#6D28D9; }
+.tag-warn{ background:var(--warn-tint); color:#B45309; }
+.tag-danger{ background:var(--danger-tint); color:#B91C1C; }
+.kpi{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-top:4px; }
+.kpi-card{ display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
+.kpi-icon{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:16px; }
+.kpi-icon.blue{ background:var(--primary); }
+.kpi-icon.purple{ background:var(--ai); }
+.kpi-icon.green{ background:var(--ok); }
+.kpi-icon.amber{ background:var(--warn); }
+.kpi-icon.red{ background:var(--danger); }
+.kpi-label{ color:var(--muted); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; }
+.kpi-value{ font-family:var(--mono); font-size:24px; font-weight:700; line-height:1.25; }
+.chart-obs{ stroke:var(--primary); stroke-width:2.5; fill:none; }
+.chart-forecast{ stroke:var(--ai); stroke-width:2.5; fill:none; stroke-dasharray:6 5; }
+.chart-now-dot{ fill:var(--primary); }
+.chart-now-guide{ stroke:var(--muted); stroke-dasharray:3 3; stroke-width:1; }
+.chart-axis{ stroke:var(--muted); stroke-width:1; }
+.chart-tick{ fill:var(--muted); font-family:var(--mono); font-size:10px; }
+.chart-caption{ font-size:12px; color:var(--muted); margin-top:6px; }
+.alert-row{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; transition:background .15s,border-color .15s,box-shadow .15s; cursor:pointer; }
+.alert-row:hover{ background:var(--primary-tint); border-color:var(--primary); box-shadow:var(--shadow); }
+.alert-row.critical{ background:var(--danger-tint); border-color:#FECACA; }
+.alert-row.warn{ background:var(--warn-tint); border-color:#FDE68A; }
+.alert-row.info{ background:var(--ok-tint); border-color:#BBF7D0; }
+.alert-row.stale-block{ background:var(--danger-tint); color:var(--muted); cursor:not-allowed; opacity:.85; border-color:#FECACA; }
+.sev{ text-transform:uppercase; font-size:11px; font-weight:800; letter-spacing:.5px; padding:3px 8px; border-radius:6px; }
+.sev.critical{ background:var(--danger); color:#fff; }
+.sev.warn{ background:var(--warn); color:#fff; }
+.sev.info{ background:var(--ok); color:#fff; }
+.alert-animal{ font-weight:700; min-width:150px; }
+.alert-type{ color:var(--muted); font-size:13px; }
+.conf-bar{ width:76px; height:6px; border-radius:3px; background:#EDF0F7; overflow:hidden; }
+.conf-fill{ height:100%; border-radius:3px; background:var(--ai); }
+.alert-meta{ color:var(--muted); font-size:12px; }
+.row-btn{ margin-left:auto; }
+.gauge-track{ height:10px; border-radius:5px; background:#EDF0F7; overflow:hidden; margin-top:8px; }
+.gauge-fill{ height:100%; border-radius:5px; background:var(--warn); }
+.gauge-cap{ display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:6px; }
+.chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:8px; font-size:12.5px; border:1px solid var(--border); background:var(--surface); }
+.chip::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--primary); }
+.chip.ai::before{ background:var(--ai); }
+.feed-row{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+.audit-card{ background:#F8F9FC; border:1px solid var(--border); border-radius:10px; padding:6px 10px; }
+#audit-list .badge{ font-family:var(--mono); font-size:12px; color:#3D5278; padding:8px 4px 7px; border-bottom:1px dashed var(--border); background:transparent; border-radius:0; }
+.overlay{ position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; z-index:50; }
+.modal-card{ background:var(--surface); border-radius:14px; box-shadow:0 20px 50px rgba(15,23,42,.25); max-width:460px; margin:10vh auto; padding:22px; }
+input[type=text],input[type=number]{ border:1px solid var(--border); border-radius:8px; padding:9px 12px; font:inherit; color:var(--ink); width:100%; box-sizing:border-box; }
+input[type=text]:focus,input[type=number]:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-tint); }
+.stack > * + *{ margin-top:10px; }</style>
+</head>
+<body>
+
+<div id="app">
+
+  <section class="screen active" id="screen-feed">
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Vet Console — Von Digitalis Estates</div>
+    <div class="topbar-meta">
+      <span class="badge badge-blue">edge uplink <b id="edge-status">live</b></span>
+      <span class="badge ai">Health &amp; Feeding AI v7.2</span>
+    </div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Animal health alerts</div>
+    <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Prioritized by severity. Low-confidence detections are escalated to human review. Tap a row to open the animal health detail.</p>
+    <div id="alert-list">
+      <div class="alert-row critical" data-animal="Piranha #4">
+        <span class="sev critical">Critical</span>
+        <span class="alert-animal">Piranha #4</span>
+        <span class="alert-type">Eating anomaly detected</span>
+        <span class="conf-bar"><span class="conf-fill" style="width:95%"></span></span>
+        <span class="alert-meta">ingestion model D-EAT v7.2 · conf 95% · 2 min ago</span>
+        <span class="chip ai">grounded in feeding camera + weight telemetry</span>
+        <button class="btn row-btn" data-nav="screen-detail">Triage →</button>
+      </div>
+      <div class="alert-row warn" data-animal="Rack O' Ribbit #12">
+        <span class="sev warn">Warn</span>
+        <span class="alert-animal">Rack O' Ribbit #12</span>
+        <span class="alert-type">Low appetite trend</span>
+        <span class="conf-bar"><span class="conf-fill" style="width:78%"></span></span>
+        <span class="alert-meta">trend model T-APP v7.1 · conf 78% · 12 min ago</span>
+        <span class="chip ai">grounded in 7-day feeding history</span>
+        <span class="tag tag-warn">Manual review recommended — escalated to human</span>
+        <button class="btn row-btn" data-nav="screen-detail">Triage →</button>
+      </div>
+      <div class="alert-row info" data-animal="Raptor #3">
+        <span class="sev info">Info</span>
+        <span class="alert-animal">Raptor #3</span>
+        <span class="alert-type">Activity back to baseline</span>
+        <span class="conf-bar"><span class="conf-fill" style="width:64%"></span></span>
+        <span class="alert-meta">classification model C-MOT v7.3 · conf 64% · 31 min ago</span>
+        <span class="chip ai">grounded in motion + heart-rate telemetry</span>
+        <button class="btn row-btn" data-nav="screen-detail">Triage →</button>
+      </div>
+      <div class="alert-row stale-block" data-animal="Terra Domes #8">
+        <span class="sev warn">—</span>
+        <span class="alert-animal">Terra Domes #8</span>
+        <span class="alert-type">blocked: stale edge data (uplink &gt;5 min)</span>
+        <span class="alert-meta">no telemetry available</span>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <section class="screen" id="screen-detail">
+  <div class="breadcrumb"><a data-nav="screen-feed">Alert Feed</a> / <span id="animal-title">Piranha #4</span></div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Animal health — <span id="animal-title2">Piranha #4</span></div>
+    <div class="topbar-meta">
+      <span class="badge badge-blue">enclosure <b id="animal-enclosure">Piranha Falls</b></span>
+      <span class="badge ai">Health &amp; Feeding AI v7.2</span>
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-card">
+      <span class="kpi-icon red">HR</span>
+      <div><div class="kpi-label">Heart rate</div><div class="kpi-value" id="kpi-hr">142 bpm</div></div>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon amber">FD</span>
+      <div><div class="kpi-label">Feeding today</div><div class="kpi-value" id="kpi-feed">61%</div></div>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon green">AC</span>
+      <div><div class="kpi-label">Activity</div><div class="kpi-value" id="kpi-act">baseline</div></div>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon purple">PC</span>
+      <div><div class="kpi-label">Piranha population</div><div class="kpi-value" id="kpi-pop">142 / 150</div></div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Feeding forecast: observed vs AI forecast</div>
+    <svg width="100%" height="140" viewBox="0 0 900 140" role="img" aria-label="placeholder feeding chart">
+      <line class="chart-axis" x1="40" y1="115" x2="880" y2="115"/>
+      <line class="chart-now-guide" x1="620" y1="10" x2="620" y2="115"/>
+      <path class="chart-obs" d="M60 105 L140 100 L220 96 L300 88 L380 78 L460 66 L540 56 L620 48"/>
+      <circle class="chart-now-dot" cx="620" cy="48" r="4"/>
+      <path class="chart-forecast" d="M620 48 L700 42 L780 40 L860 38"/>
+      <text class="chart-tick" x="50" y="128">08:00</text>
+      <text class="chart-tick" x="700" y="128">14:00</text>
+      <text class="chart-tick" x="830" y="128">18:00</text>
+    </svg>
+    <div class="chart-caption">solid = observed · dashed = AI forecast · feeding trending down 5% vs baseline</div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Piranha population vs capacity</div>
+    <div class="gauge-track"><div class="gauge-fill" style="width:95%"></div></div>
+    <div class="gauge-cap"><span>142 of 150 capacity</span><span>95% full</span></div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Feeding history</div>
+    <div id="feed-history">
+      <div class="feed-row"><span>Yesterday</span><span>92% consumed</span></div>
+      <div class="feed-row"><span>2 days ago</span><span>95% consumed</span></div>
+      <div class="feed-row"><span>3 days ago</span><span>88% consumed</span></div>
+      <div class="feed-row"><span>Weekly trend</span><span class="tag tag-warn">down 5%</span></div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Health &amp; Feeding AI attribution</div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <span class="chip ai">Eating anomaly: −8% feeding in 24h</span>
+      <span class="chip ai">Environmental: water temp +1.5°C</span>
+      <span class="chip ai">Seasonal baseline: spring moult</span>
+      <span class="chip">Model version: Health &amp; Feeding AI v7.2</span>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn" data-nav="screen-feed">← Back to alerts</button>
+    <button class="btn" id="save-care-note">Save care note</button>
+    <button class="btn primary" data-nav="screen-confirm">Recommend treatment →</button>
+  </div>
+  </section>
+
+  <section class="screen" id="screen-confirm">
+  <div class="breadcrumb"><a data-nav="screen-feed">Alert Feed</a> / <a data-nav="screen-detail">Piranha #4</a> / Treatment</div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Treatment — <span id="approve-animal">Piranha #4</span></div>
+    <div class="topbar-meta">
+      <span class="badge ai">Health &amp; Feeding AI v7.2 · 2 min old</span>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Proposed care plan</div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <span class="badge ai">Reduce feed by 20% for 48h</span>
+      <span class="badge ai">Increase water temp monitoring</span>
+      <span class="badge ai">Confidence: 78%</span>
+      <span class="badge">Model: Health &amp; Feeding AI v7.2</span>
+    </div>
+    <p style="color:var(--muted); font-size:13px; margin:12px 0 0;">Safety-critical: this action is never fully autonomous. A veterinary professional must confirm before changes are applied.</p>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Approval status</div>
+    <div id="approve-status"><span class="badge" id="approve-pill">Pending approval</span></div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Audit trail</div>
+    <div class="audit-card"><div id="audit-list">(empty)</div></div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn" data-nav="screen-detail">← Back to detail</button>
+    <button class="btn primary" id="open-approve">Approve treatment</button>
+  </div>
+
+  <div id="approve-modal" class="overlay">
+    <div class="modal-card">
+      <div class="region-label">Confirm treatment</div>
+      <p id="approve-text">Approve the care plan for this animal? This is a safety-critical action requiring veterinary confirmation.</p>
+      <div class="stack">
+        <input type="text" id="vet-name" placeholder="Vet identity (required)">
+        <input type="text" id="vet-note" placeholder="Note / clinical reason (required)">
+      </div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn primary" id="confirm-btn">Approve</button>
+        <button class="btn" id="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  </section>
+
+</div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) {
+      s.classList.toggle('active', s.id === id);
+    });
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('[data-nav]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      showScreen(el.getAttribute('data-nav'));
+    });
+  });
+
+  document.querySelectorAll('#alert-list .alert-row:not(.stale-block)').forEach(function (row) {
+    row.addEventListener('click', function () {
+      var a = row.getAttribute('data-animal');
+      document.getElementById('animal-title').textContent = a;
+      document.getElementById('animal-title2').textContent = a;
+      showScreen('screen-detail');
+    });
+  });
+  document.querySelectorAll('#alert-list .alert-row .btn').forEach(function (el) {
+    el.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      var row = el.closest('.alert-row');
+      row.click();
+    });
+  });
+
+  var pendingAnimal = 'Piranha #4';
+  document.getElementById('open-approve').addEventListener('click', function () {
+    var a = document.getElementById('animal-title').textContent;
+    pendingAnimal = a;
+    document.getElementById('approve-animal').textContent = a;
+    document.getElementById('approve-text').textContent = 'Approve the care plan for ' + a + '? Safety-critical — veterinary confirmation required.';
+    document.getElementById('approve-modal').style.display = 'block';
+  });
+  document.getElementById('cancel-btn').addEventListener('click', function () {
+    document.getElementById('approve-modal').style.display = 'none';
+  });
+  document.getElementById('save-care-note').addEventListener('click', function () {
+    var row = document.createElement('div');
+    row.className = 'feed-row';
+    row.innerHTML = '<span>Care note saved</span><span>feeding plan on track</span>';
+    document.getElementById('feed-history').appendChild(row);
+  });
+  document.getElementById('confirm-btn').addEventListener('click', function () {
+    var name = document.getElementById('vet-name').value.trim();
+    var note = document.getElementById('vet-note').value.trim();
+    if (!name || !note) { alert('Vet identity and note are required.'); return; }
+    document.getElementById('approve-modal').style.display = 'none';
+    var pill = document.getElementById('approve-pill');
+    pill.textContent = 'Approved'; pill.classList.add('ok');
+    var entry = name + ' · ' + new Date().toISOString() + ' · Health & Feeding AI v7.2 · ' + note;
+    document.getElementById('audit-list').innerHTML += '<div class="badge" style="display:block; margin-bottom:4px;">' + entry + '</div>';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer App — Wireframe</title>
+<style>:root{
+  --canvas:#F4F6FB; --surface:#FFFFFF; --ink:#1B2437; --muted:#5B6B8C; --border:#E3E9F3;
+  --primary:#2563EB; --primary-deep:#1D4ED8; --primary-tint:#EAF1FE;
+  --ai:#7C3AED; --ai-tint:#F0EAFF;
+  --ok:#16A34A; --ok-tint:#E7F6EC;
+  --warn:#D97706; --warn-tint:#FEF3C7;
+  --danger:#DC2626; --danger-tint:#FEE2E2;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:Consolas,Menlo,monospace;
+  --shadow:0 1px 3px rgba(27,36,55,.06),0 4px 14px rgba(27,36,55,.06);
+  --radius:12px;
+}
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:var(--sans); background:var(--canvas); color:var(--ink); font-size:14px; line-height:1.45; }
+.screen{ display:none; max-width:1140px; margin:0 auto; padding:24px 20px 56px; }
+.screen.active{ display:block; }
+.topbar{ position:sticky; top:0; z-index:20; background:var(--surface); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+.brand-glyph{ width:26px; height:26px; border-radius:7px; background:linear-gradient(135deg,var(--ok),#15803D); }
+.topbar-meta{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.region{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin:16px 0; box-shadow:var(--shadow); }
+.region-label{ font-size:11px; letter-spacing:.9px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:12px; padding-left:10px; border-left:3px solid var(--primary); }
+.region.label-ai .region-label{ border-left-color:var(--ai); }
+.breadcrumb{ color:var(--muted); font-size:13px; margin:4px 2px 12px; }
+.breadcrumb a{ color:var(--primary); cursor:pointer; font-weight:600; text-decoration:none; }
+.breadcrumb a:hover{ text-decoration:underline; }
+.btn{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:var(--surface); color:var(--ink); padding:8px 14px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; transition:background .15s,border-color .15s,color .15s; }
+.btn:hover{ background:var(--primary-tint); border-color:var(--primary); color:var(--primary-deep); }
+.btn.primary{ background:var(--primary); border-color:var(--primary); color:#fff; }
+.btn.primary:hover{ background:var(--primary-deep); border-color:var(--primary-deep); color:#fff; }
+.badge{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; background:#EEF1F7; color:var(--muted); }
+.badge.badge-blue{ background:var(--primary-tint); color:var(--primary-deep); }
+.badge.ai{ background:var(--ai-tint); color:#6D28D9; }
+.badge.ok{ background:var(--ok-tint); color:#15803D; }
+.tag{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-size:12.5px; font-weight:600; }
+.tag::before{ content:""; width:8px; height:8px; border-radius:50%; background:currentColor; }
+.tag-ok{ background:var(--ok-tint); color:#15803D; }
+.tag-ai{ background:var(--ai-tint); color:#6D28D9; }
+.tag-warn{ background:var(--warn-tint); color:#B45309; }
+.tag-danger{ background:var(--danger-tint); color:#B91C1C; }
+.kpi{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:4px; }
+.kpi-card{ display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
+.kpi-icon{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:16px; }
+.kpi-icon.blue{ background:var(--primary); }
+.kpi-icon.purple{ background:var(--ai); }
+.kpi-icon.green{ background:var(--ok); }
+.kpi-icon.amber{ background:var(--warn); }
+.kpi-label{ color:var(--muted); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; }
+.kpi-value{ font-family:var(--mono); font-size:24px; font-weight:700; line-height:1.25; }
+.chart-obs{ stroke:var(--primary); stroke-width:2.5; fill:none; }
+.chart-forecast{ stroke:var(--ai); stroke-width:2.5; fill:none; stroke-dasharray:6 5; }
+.chart-now-dot{ fill:var(--primary); }
+.chart-now-guide{ stroke:var(--muted); stroke-dasharray:3 3; stroke-width:1; }
+.chart-axis{ stroke:var(--muted); stroke-width:1; }
+.chart-tick{ fill:var(--muted); font-family:var(--mono); font-size:10px; }
+.chart-caption{ font-size:12px; color:var(--muted); margin-top:6px; }
+.offer-banner{ display:flex; align-items:center; gap:10px; background:var(--ai-tint); border:1px solid #D8CCFF; color:#4C1D95; border-radius:10px; padding:12px 16px; font-weight:600; margin-bottom:14px; flex-wrap:wrap; }
+.offer-card{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+.offer-title{ font-weight:600; }
+.offer-desc{ color:var(--muted); font-size:12.5px; }
+.promo{ display:flex; gap:8px; align-items:center; margin-top:14px; flex-wrap:wrap; }
+.ticket-card{ display:flex; justify-content:space-between; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:12px; flex-wrap:wrap; }
+.ticket-name{ font-weight:700; font-size:16px; }
+.ticket-desc{ color:var(--muted); font-size:13px; margin-top:2px; }
+.ticket-price{ font-family:var(--mono); font-size:20px; font-weight:700; color:var(--primary-deep); }
+.field{ display:flex; flex-direction:column; gap:6px; margin:10px 0; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.field input,.field select{ border:1px solid var(--border); border-radius:8px; padding:9px 12px; font:inherit; color:var(--ink); width:100%; box-sizing:border-box; }
+.field input:focus,.field select:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-tint); }
+.summary-row{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); }
+.summary-total{ display:flex; justify-content:space-between; padding:12px 0 0; font-weight:700; font-size:16px; }
+.eticket{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-bottom:12px; }
+.eticket-head{ display:flex; justify-content:space-between; font-weight:700; margin-bottom:8px; }
+.barcode{ font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--ink); background:#EDF0F7; border-radius:6px; padding:8px 12px; text-align:center; }
+.success-check{ display:grid; place-items:center; width:44px; height:44px; border-radius:50%; background:var(--ok-tint); color:#15803D; font-weight:700; font-size:22px; margin-bottom:10px; }
+.assist-fab{ position:fixed; right:22px; bottom:22px; z-index:40; width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,var(--ai),#6D28D9); color:#fff; border:none; font-size:22px; cursor:pointer; box-shadow:var(--shadow); display:grid; place-items:center; }
+.assist-fab:hover{ background:#5B21B6; }
+.assist-panel{ position:fixed; right:90px; bottom:22px; z-index:40; width:340px; max-height:430px; display:none; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:0 20px 50px rgba(15,23,42,.25); overflow:hidden; }
+.assist-panel.open{ display:flex; }
+.assist-head{ background:linear-gradient(135deg,var(--ai),#6D28D9); color:#fff; padding:12px 16px; font-weight:700; display:flex; justify-content:space-between; align-items:center; }
+.assist-close{ background:none; border:none; color:#fff; font-size:18px; cursor:pointer; }
+.assist-body{ padding:14px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; background:var(--canvas); }
+.msg{ padding:9px 12px; border-radius:12px; font-size:13.5px; max-width:92%; }
+.msg.user{ align-self:flex-end; background:var(--primary); color:#fff; }
+.msg.bot{ align-self:flex-start; background:var(--surface); border:1px solid var(--border); }
+.msg-foot{ font-size:11px; color:var(--muted); margin-top:5px; }
+.assist-input{ display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:var(--surface); }
+.assist-input input{ flex:1; }
+.grounded{ border-left:3px solid var(--ai); background:var(--ai-tint); padding:6px 10px; border-radius:0 8px 8px 0; font-size:12px; color:#4C1D95; margin-top:6px; }
+.stale-notice{ display:none; align-items:center; gap:8px; background:var(--warn-tint); color:#B45309; border:1px solid #FDE68A; border-radius:10px; padding:10px 14px; font-weight:600; margin-bottom:14px; }
+#stale-notice.pulse{ display:flex; }
+input[type=text],input[type=number],input[type=date]{ border:1px solid var(--border); border-radius:8px; padding:9px 12px; font:inherit; color:var(--ink); box-sizing:border-box; }
+.mono{ font-family:var(--mono); }
+.stack > * + *{ margin-top:10px; }</style>
+</head>
+<body>
+
+<div id="app">
+
+  <section class="screen active" id="screen-hub">
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Customer App — Von Digitalis Estates</div>
+    <div class="topbar-meta">
+      <span class="badge">2026-09-05</span>
+      <span class="badge ai">Ops AI v7.2 · popularity live</span>
+    </div>
+  </div>
+
+  <div class="offer-banner">Today: Piranha Falls +12% forecast · skip-the-line add-on available in checkout</div>
+
+  <div class="region">
+    <div class="region-label">Choose your pass</div>
+    <div class="ticket-card">
+      <div>
+        <div class="ticket-name">Day ticket</div>
+        <div class="ticket-desc">Full-day access to rides and animal collection. No return visit discount.</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ticket-price">$29</div>
+      </div>
+    </div>
+    <div class="ticket-card">
+      <div>
+        <div class="ticket-name">Family pass</div>
+        <div class="ticket-desc">Up to 2 adults + 3 children. Includes parking and return-next-visit 10% off.</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ticket-price">from $79</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Today's popularity (live vs forecast)</div>
+    <svg width="100%" height="140" viewBox="0 0 900 140" role="img" aria-label="placeholder popularity chart">
+      <line class="chart-axis" x1="40" y1="115" x2="880" y2="115"/>
+      <line class="chart-now-guide" x1="700" y1="10" x2="700" y2="115"/>
+      <path class="chart-obs" d="M60 105 L140 98 L220 84 L300 62 L380 42 L460 35 L540 40 L620 54 L700 70"/>
+      <circle class="chart-now-dot" cx="700" cy="70" r="4"/>
+      <path class="chart-forecast" d="M700 70 L780 84 L860 92"/>
+      <text class="chart-tick" x="50" y="128">08:00</text>
+      <text class="chart-tick" x="700" y="128">14:00</text>
+      <text class="chart-tick" x="830" y="128">18:00</text>
+    </svg>
+    <div class="chart-caption">solid = observed · dashed = AI forecast · buses quiet 10:00–11:00</div>
+  </div>
+
+  <div style="display:flex; gap:12px; margin-top:12px;">
+    <button class="btn primary" data-nav="screen-options">Configure Day ticket →</button>
+    <button class="btn primary" data-nav="screen-options">Configure Family pass →</button>
+  </div>
+  </section>
+
+  <section class="screen" id="screen-options">
+  <div class="breadcrumb"><a data-nav="screen-hub">Ticket Hub</a> / Ticket Options</div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Ticket Options</div>
+    <div class="topbar-meta">
+      <span class="badge badge-blue">Date <b id="opt-date">2026-09-05</b></span>
+    </div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Configure your visit</div>
+    <div class="field">
+      <label for="visit-date">Visit date</label>
+      <input type="date" id="visit-date" value="2026-09-05">
+    </div>
+    <div class="field">
+      <label for="adults">Adults</label>
+      <input type="number" id="adults" value="2" min="0">
+    </div>
+    <div class="field">
+      <label for="children">Children</label>
+      <input type="number" id="children" value="0" min="0">
+    </div>
+    <div class="field">
+      <label for="addons">Add-ons</label>
+      <select id="addons">
+        <option value="none">None</option>
+        <option value="parking">Parking ($8)</option>
+        <option value="skip">Skip-the-line ($12)</option>
+        <option value="both">Parking + skip-the-line ($20)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Selected pass</div>
+    <div id="selected-pass" class="summary" style="display:flex; justify-content:space-between;">
+      <span id="pass-name">Day ticket</span><span id="pass-base">$29</span>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn" data-nav="screen-hub">← Back</button>
+    <button class="btn primary" data-nav="screen-checkout">Go to checkout →</button>
+  </div>
+  </section>
+
+  <section class="screen" id="screen-checkout">
+  <div class="breadcrumb"><a data-nav="screen-hub">Ticket Hub</a> / <a data-nav="screen-options">Ticket Options</a> / Checkout</div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Checkout</div>
+    <div class="topbar-meta">
+      <span class="badge badge-blue">secure checkout</span>
+    </div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Order summary</div>
+    <div id="order-summary">
+      <div class="summary-row"><span>Day ticket × 2</span><span class="mono" id="sum-tickets">$58</span></div>
+      <div class="summary-row"><span>Add-on</span><span class="mono" id="sum-addon">None — $0</span></div>
+      <div class="summary-row"><span>Promo code</span><span class="mono" id="sum-promo">—</span></div>
+    </div>
+    <div class="summary-total"><span>Total</span><span class="mono" id="sum-total">$58</span></div>
+  </div>
+
+  <div class="region">
+    <div class="region-label">Payment</div>
+    <div class="stack">
+      <div style="background:var(--primary-tint); border:1px solid var(--primary); color:var(--primary-deep); border-radius:10px; padding:12px 14px; font-weight:600;">Payment processed by secure portal</div>
+      <p style="color:var(--muted); font-size:13px; margin:0;">This wireframe does not process real payment — shown for flow demonstration only.</p>
+      <div class="promo">
+        <input type="text" id="promo-code" placeholder="Promo code (try RETURN10)" style="max-width:200px;">
+        <button class="btn" id="apply-promo">Apply</button>
+        <span class="badge ok" id="promo-status" style="display:none;">10% off applied</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn" data-nav="screen-options">← Back</button>
+    <button class="btn primary" id="place-order">Place order</button>
+  </div>
+  </section>
+
+  <section class="screen" id="screen-confirm">
+  <div class="breadcrumb"><a data-nav="screen-hub">Ticket Hub</a> / Confirmation</div>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-glyph"></span> Order confirmed</div>
+    <div class="topbar-meta">
+      <span class="badge ok">Payment confirmed</span>
+    </div>
+  </div>
+
+  <div class="success-check">✓</div>
+  <div class="region">
+    <div class="region-label">Your e-tickets</div>
+    <div class="eticket">
+      <div class="eticket-head"><span>Day ticket</span><span>2026-09-05</span></div>
+      <div class="barcode">▓▓▓▓░░▓▓░░</div>
+    </div>
+  </div>
+
+  <div class="region label-ai">
+    <div class="region-label">Personalized offers (Customer GenAI)</div>
+    <div class="stack">
+      <div class="offer-card">
+        <div class="offer-title">Lunch deal — 20% off at Terra Domes cafe</div>
+        <div class="offer-desc">Valid with today's ticket. Grounded in family-pass behavior.</div>
+        <div class="grounded">AI-generated · grounded in park data + live telemetry · confidence 88%</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-title">Return next month — 10% off</div>
+        <div class="offer-desc">We noticed peak popularity is quiet on Tuesdays. Perfect for a quieter visit.</div>
+        <div class="grounded">AI-generated · grounded in park data + live telemetry · confidence 88%</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-title">Skip-the-line pass</div>
+        <div class="offer-desc">Breeze past queues at Piranha Falls and Raptor Aviary today.</div>
+        <span class="badge ai">Add for $12</span>
+        <div class="grounded">Customer GenAI · AI-generated · grounded in reservation data + live wait times · confidence 91%</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <button class="btn primary" data-nav="screen-hub">View another day →</button>
+  </div>
+  </section>
+
+</div>
+
+<button class="assist-fab" id="assist-fab">AI</button>
+<div class="assist-panel" id="assist-panel">
+  <div class="assist-head"><span>Tour Assistant</span><button class="assist-close" id="assist-close">×</button></div>
+  <div class="assist-body" id="assist-body">
+    <div class="msg bot">Hi! Ask me about rides, the animal collection, wait times, or tickets.</div>
+    <div class="msg user">Is Piranha Falls open?</div>
+    <div class="msg bot">Yes — Piranha Falls is open today. Current wait <b>~20 min</b>, forecast occupancy rising to <b>61%</b> by 14:00. I'd try the Raptor Aviary (quieter, ~15 min) if you'd like a shorter queue.
+      <div class="grounded">Grounded in ride/animal data + live telemetry · AI-generated · confidence 88%</div>
+    </div>
+  </div>
+  <div class="assist-input">
+    <input type="text" id="assist-text" placeholder="Ask about the park…">
+    <button class="btn primary" id="assist-send">Send</button>
+  </div>
+</div>
+
+<div id="stale-notice" class="stale-notice">Live popularity data delayed — showing latest cached forecast</div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) {
+      s.classList.toggle('active', s.id === id);
+    });
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('[data-nav]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      showScreen(el.getAttribute('data-nav'));
+    });
+  });
+
+  document.getElementById('assist-fab').addEventListener('click', function () {
+    document.getElementById('assist-panel').classList.toggle('open');
+  });
+  document.getElementById('assist-close').addEventListener('click', function () {
+    document.getElementById('assist-panel').classList.remove('open');
+  });
+  function botReply(q) {
+    var t = q.toLowerCase();
+    if (t.indexOf('piranha') !== -1 || t.indexOf('open') !== -1) {
+      return 'Piranha Falls is open today. Current wait <b>~20 min</b>, forecast rising to <b>61%</b> by 14:00. Try the Raptor Aviary for a shorter queue.<div class="grounded">Grounded in ride/animal data + live telemetry · AI-generated · confidence 88%</div>';
+    }
+    if (t.indexOf('ticket') !== -1 || t.indexOf('price') !== -1 || t.indexOf('cost') !== -1) {
+      return 'Day tickets are <b>$29</b>; the Family pass starts at <b>$79</b> and includes parking + 10% on your next visit.<div class="grounded">Grounded in ticket policy · AI-generated · confidence 88%</div>';
+    }
+    return 'Let me look that up for you. (Demo assistant — try asking about Piranha Falls or ticket prices.)<div class="grounded">AI-generated · confidence 88%</div>';
+  }
+  function addMsg(html, cls) {
+    var d = document.createElement('div');
+    d.className = 'msg ' + cls;
+    d.innerHTML = html;
+    document.getElementById('assist-body').appendChild(d);
+    document.getElementById('assist-body').scrollTop = document.getElementById('assist-body').scrollHeight;
+  }
+  document.getElementById('assist-send').addEventListener('click', function () {
+    var inp = document.getElementById('assist-text');
+    var q = inp.value.trim();
+    if (!q) { return; }
+    addMsg(q, 'user');
+    document.getElementById('assist-text').value = '';
+    setTimeout(function () { addMsg(botReply(q), 'bot'); }, 200);
+  });
+
+  var promoApplied = false;
+  document.getElementById('apply-promo').addEventListener('click', function () {
+    var v = document.getElementById('promo-code').value.trim().toUpperCase();
+    if (v === 'RETURN10') {
+      promoApplied = true;
+      document.getElementById('promo-status').style.display = 'inline-block';
+      document.getElementById('sum-promo').textContent = 'RETURN10 — 10% off';
+      document.getElementById('sum-total').textContent = '$52';
+      document.getElementById('sum-addon').textContent = 'None — $0';
+    } else {
+      alert('Promo code not recognized.');
+    }
+  });
+
+  document.getElementById('place-order').addEventListener('click', function () {
+    showScreen('screen-confirm');
+  });
+
+  function showStale() { document.getElementById('stale-notice').classList.add('pulse'); }
+  setTimeout(showStale, 1200);
+</script>
+</body>
+</html>
