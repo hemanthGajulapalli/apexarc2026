@@ -1,6 +1,6 @@
 # Von Digitalis Estates — ADR Summary: Final Decisions & Advice
 
-A consolidated index of all 22 ADRs: the final decision made in each, and
+A consolidated index of all 28 ADRs: the final decision made in each, and
 the advice/guidance recorded for the team carrying it forward. See the
 individual ADR files for full context and rejected options.
 
@@ -186,6 +186,29 @@ fundamental-change ADR.
 - Pilot with pre-approved bands and zero per-change approvals; measure
   how often the model wants to exceed them before sizing approval
   friction.
+
+---
+
+## Business Continuity Decisions
+
+### ADR028 — Business Continuity via Periodic Continuity Exports and Manual Fallback
+**Decision:** Complement ADR019's DR (getting IT back) with BC (running
+the estate while IT is down): every business-critical process gets a
+tiered nightly/daily continuity export (email + object storage), a
+paper-based manual-fallback SOP, and a recovery reconciliation that
+back-fills outage-window records against the PITR-restored database.
+Communication fallback switches to a documented secondary email provider
+using the same estate credentials. Connectivity/network resilience and
+AI personalization (accepted degradation to generic service) are
+explicitly out of scope / no-fallback.
+**Advice:**
+- Rehearse before go-live — one tabletop plus one paper-mode gate drill;
+  an untested fallback SOP is not a reliable one (same discipline as
+  ADR019's PITR test).
+- Tag every outage-window record during reconciliation so loyalty,
+  admissions, and the audit trail stay honest after the merge.
+- State explicitly which processes get no fallback rather than
+  improvising during the outage.
 
 ---
 

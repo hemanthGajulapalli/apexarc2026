@@ -2,7 +2,18 @@
 
 A structured approach to the **O'Reilly Architectural Katas 2026 — AI-Assisted Software Architecture** challenge.
 
+## TL;DR
+1. **Problem:** a large, sprawling estate must grow from ~5,000 to 15,000+ visitors/day in 3 years — with no ticketing infrastructure, no visibility into what draws visitors, 200+ animals across 55 enclosures monitored only by keeper observation, and patchy WiFi everywhere.
+2. **Architecture:** event-driven, five modular services over an MQTT bus (ADR012); ~95 LoRaWAN sensors fan into 3 gateway concentrators with store-and-forward to defeat the patchy WiFi (ADR001, ADR023 — deployed within RF duty-cycle regulations); one managed cloud, serverless-first (ADR013); three purpose-fit storage technologies (ADR014).
+3. **AI use cases:** UC01 popularity analytics with an "Ops AI" forecasting/recommendation engine (ADR004, ADR021), UC02 species-tiered animal health & feeding monitoring (ADR005), UC03 keeper-assisted piranha population counting (ADR006), UC04 personalization/concierge — deliberately deferred until a season of real data exists (ADR008, ADR022).
+4. **Human-in-the-loop by design:** every consequential AI output — animal-health alerts, staffing/investment recommendations, dynamic pricing — requires explicit human confirmation, audit-logged (ADR007, ADR021, ADR027); no autonomous agentic AI anywhere.
+5. **Verification of non-determinism:** golden-set regression is a hard CI/CD deploy gate for any model/provider change (ADR020), with production drift monitoring, keeper feedback loops (ADR011), and a provider-portability abstraction validated by real swaps (ADR010).
+6. **Grounded AI only:** the concierge and the estate knowledge/compliance advisor are retrieval-based with clause citations and confidence scores — no open-ended generation, no fine-tuned weights (ADR022, ADR026); external data arrives via provenance-tracked scheduled pulls (ADR024) behind one versioned estate API surface (ADR025).
+7. **Buy, secure, observe, minimize:** ticketing/payments (ADR009) and OAuth identity (ADR016) are bought/standards-based; two-tier IoT security with no shared credentials (ADR015); one shared observability stack instrumented with correlation IDs from day one (ADR017); visitor data minimized and aggregate-by-default (ADR018).
+8. **Resilience end-to-end:** tiered backups by data criticality (ADR019), plus business continuity — nightly/daily continuity exports and paper fallback SOPs so the estate runs even with all IT, including the email provider, down, with honest reconciliation on recovery (ADR028).
+
 ## Table of Contents
+- [TL;DR](#tldr)
 - [Team](#team)
 - [Glossary](#glossary)
 - [Problem Definition](#problem-definition)
@@ -234,6 +245,7 @@ Building a scalable, reliable, and secure AI/ML-powered system requires carefull
 - **Security ([ADR015](ADRs/adr015-iot-device-mqtt-security.md)):** LoRaWAN sensors authenticate via per-device session keys; the 3 gateway concentrators each hold their own TLS client certificate with topic-level access control — no shared/global credentials anywhere in the fleet.
 - **Identity ([ADR016](ADRs/adr016-visitor-staff-authentication-access-control.md)):** OAuth/OIDC on the estate's own cloud platform for both visitors and staff, decoupled from the ticketing SaaS vendor.
 - **Observability ([ADR017](ADRs/adr017-observability-monitoring-infrastructure.md)):** a single shared managed stack (logs, metrics, traces) across all services, with AI-specific drift/agreement-rate monitoring layered on top.
+- **[Business continuity](other_design_docs/business-continuity-fallback-sop.md) ([ADR028](ADRs/adr028-business-continuity-manual-fallback.md)):** ADR019's backups protect the data; ADR028 keeps the *business* running through a total outage (all systems, including the email provider, assumed down) via periodic continuity exports, per-process paper fallback modes, and recovery reconciliation. Connectivity/network resilience is explicitly out of scope.
 - **[Fitness functions](other_design_docs/fitness-functions.md):** automated, repeatable checks for reliability (simulated gateway backhaul outage), AI trustworthiness (golden-set pass rate, drift, keeper agreement rate), cost, adaptability (provider-swap smoke test), and security (device/gateway revocation).
 
 # Final Thoughts
