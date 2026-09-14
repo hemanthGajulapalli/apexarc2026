@@ -141,6 +141,52 @@ carries a confidence score and states its grounding source.
 - Treat ride/animal-safety-adjacent answers as a distinct, higher-bar
   golden-set category than general park-info questions.
 
+### ADR023 — LoRaWAN Occupancy Counters & Duty-Cycled Periodic Uplink
+**Decision:** Zone occupancy via LoRaWAN people counters uplinking
+every 6–7 s on fixed periodic duty-cycled uplinks (ETSI EN 300 220 /
+FCC Part 15 compliant), rolling-count aggregation as a bounded,
+named exception to ADR004's hourly batch — no streaming infrastructure.
+**Advice:**
+- Document the per-node duty-cycle math in the deployment runbook so a
+  hardware swap can be re-validated against the regulation.
+
+### ADR024 — External Data Feed Ingestion
+**Decision:** All third-party feeds (weather, public-domain notices,
+commercial satellite) via scheduled batch pull-jobs in the existing
+ingestion service, provenance-tracked; polling only, no inbound
+webhooks.
+**Advice:**
+- Harden the pattern on weather (first feed) before the satellite and
+  notice feeds reuse it; archive what public sources said at fetch
+  time.
+
+### ADR025 — Estate API Surface for Mobile/AR Clients & MCP Endpoint
+**Decision:** One versioned, read-oriented `/api/v1` surface serving
+both the future AR app (map packs, area status, telemetry upload) and
+the MCP planner tools; MCP tools wrap the same service layer.
+**Advice:**
+- Keep v1 deliberately small; rate-limit and attribute agent calls per
+  identity.
+
+### ADR026 — Estate Knowledge & Compliance Advisory
+**Decision:** Grounded RAG over the versioned SOP/regulation corpus
+with clause citations and confidence; action-triggering advice requires
+ADR007 human confirmation. No fine-tuned-weights approach.
+**Advice:**
+- Corpus versioning is the real deliverable — every citation states
+  which corpus version it answered from.
+
+### ADR027 — Dynamic Pricing, Discounts & Pre-Exit Refunds
+**Decision:** AI-recommended, human-approved pricing within published
+policy bands (recommend-then-approve per ADR007/ADR021); refunds are
+deterministic published policy — no AI in the money-refund decision.
+Autonomous pricing is explicitly fenced off as requiring a future
+fundamental-change ADR.
+**Advice:**
+- Pilot with pre-approved bands and zero per-change approvals; measure
+  how often the model wants to exceed them before sizing approval
+  friction.
+
 ---
 
 ## Foundational Architecture Decisions

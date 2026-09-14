@@ -61,3 +61,24 @@ PostgreSQL (implementation/db/schema.sql)
 ```
 
 No layer is skipped for convenience: the webapp never talks to Postgres directly, and no route handler embeds SQL inline that bypasses the schema's constraints (foreign keys, `NOT NULL`, `UNIQUE` on `models(name, version)`, etc. — see [database-schema.md](database-schema.md)).
+
+## Where the extended use cases will land (planned, not yet implemented)
+
+The [extended use cases program](../../usecases/extended-uc-index.md)
+(UC01.a–UC04.d, ADR023–ADR027) was checked against this module map:
+**every planned capability lands inside an existing service — no new
+service and no extraction is needed.** Landing places, so future
+implementation follows the seams already drawn:
+
+| Capability | Lands in | Why |
+|---|---|---|
+| UC01.a occupancy (ADR023) | `ingestion/` (counter uplinks) + `popularity-analytics/` (rolling occupancy state) | Same MQTT path and zone-level data as ADR003/ADR021 |
+| UC01.b weather forecast, UC02.d public-notice scan, UC02.c satellite (ADR024) | `ingestion/` (scheduled pull-jobs + provenance tables) | External feeds are batch inbound data — the ingestion service's existing responsibility, broadened |
+| UC02.a maintenance/availability | `animal-monitoring/` (asset health + work orders) + `ticketing-integration/` (availability feed to SaaS) | Asset monitoring is UC02's pattern extended; availability is ticketing-adjacent |
+| UC02.b/02.e standards & compliance advisory (ADR026) | `animal-monitoring/` (care logs) + `ai-governance/` (grounded advisory over the corpus) | Advisory is AI-governance-governed like every other AI feature |
+| UC04.b itineraries, UC04.c MCP endpoint (ADR025) | `ticketing-integration/` (itineraries join concierge/personalization) + a new versioned read router (`/api/v1`) in `app.js` for the client/MCP surface | Same visitor-facing data ownership as ADR022 |
+| UC04.d pricing/refunds (ADR027) | `ticketing-integration/` (recommend-then-approve reuses the ADR021 pattern; deterministic refund rules) | Checkout/pricing staging lives in the thin ticketing layer (ADR009) |
+
+If any of these ever triggers a real scaling or ownership need, the
+existing extraction rule applies unchanged — the seams are already in
+place.

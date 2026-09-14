@@ -1,0 +1,112 @@
+<svg viewBox="0 0 1760 640" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+<rect width="1760" height="640" fill="#ffffff"/>
+<text x="40" y="46" font-size="28" font-weight="700" fill="#0f172a">Extended Use Cases Map &#8212; Planned Today, Implemented on Horizon</text>
+<text x="40" y="72" font-size="14" fill="#64748b">14 business capabilities as sub-numbered extended cases under UC01/UC02/UC04, with the new ADRs (023&#8211;027). No fundamental architecture change; the one contested fence (autonomous pricing) is flagged in ADR027.</text>
+
+<!-- Horizon legend -->
+<rect x="40" y="96" width="1680" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="60" y="118" font-size="13" font-weight="700" fill="#334155">Horizons:</text>
+<rect x="150" y="103" width="90" height="20" rx="10" fill="#dcfce7" stroke="#22c55e"/><text x="195" y="117" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">3&#8211;6 mo</text>
+<rect x="255" y="103" width="90" height="20" rx="10" fill="#fef9c3" stroke="#eab308"/><text x="300" y="117" text-anchor="middle" font-size="12" font-weight="700" fill="#713f12">6&#8211;12 mo</text>
+<rect x="360" y="103" width="80" height="20" rx="10" fill="#ffedd5" stroke="#f97316"/><text x="400" y="117" text-anchor="middle" font-size="12" font-weight="700" fill="#7c2d12">12 mo</text>
+<rect x="455" y="103" width="80" height="20" rx="10" fill="#fce7f3" stroke="#ec4899"/><text x="495" y="117" text-anchor="middle" font-size="12" font-weight="700" fill="#831843">24 mo</text>
+<text x="570" y="118" font-size="12" fill="#64748b">Horizons are evidence-gated per the roll-out strategy &#8212; calendar dates indicate planning targets, not commitments.</text>
+
+<!-- UC01 column -->
+<rect x="40" y="150" width="540" height="450" rx="12" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="64" y="182" font-size="13" font-weight="700" fill="#3b82f6" letter-spacing="1">UC01 &#8212; VISITOR POPULARITY ANALYTICS</text>
+<text x="64" y="204" font-size="12" fill="#1e3a8a">Parent: scans + BLE + LoRaWAN &#8594; hourly/daily batch + Ops AI (ADR003/004/021)</text>
+
+<rect x="64" y="222" width="492" height="108" rx="10" fill="#ffffff" stroke="#22c55e"/>
+<text x="80" y="248" font-size="15" font-weight="700" fill="#0f172a">UC01.a &#8212; Real-Time Occupancy &amp; Area Advisory</text>
+<text x="80" y="270" font-size="12" fill="#334155">LoRaWAN occupancy counters, 6&#8211;7 s periodic duty-cycled uplinks;</text>
+<text x="80" y="288" font-size="12" fill="#334155">people-hotspot alerts, human-in-loop crowd actions (ADR007)</text>
+<text x="80" y="312" font-size="11" font-weight="700" fill="#166534">3&#8211;6 mo</text>
+<text x="140" y="312" font-size="11" fill="#64748b">&#8226; ADR023 (bounded exception to ADR004)</text>
+
+<rect x="64" y="342" width="492" height="108" rx="10" fill="#ffffff" stroke="#f97316"/>
+<text x="80" y="368" font-size="15" font-weight="700" fill="#0f172a">UC01.b &#8212; Weather-Based Visibility Forecast</text>
+<text x="80" y="390" font-size="12" fill="#334155">"What to see where" by time/weather/season; future micro-climate</text>
+<text x="80" y="408" font-size="12" fill="#334155">stations; grounds the concierge + planner</text>
+<text x="80" y="432" font-size="11" font-weight="700" fill="#7c2d12">12 mo</text>
+<text x="125" y="432" font-size="11" fill="#64748b">&#8226; ADR024 (first external feed), ADR011</text>
+
+<rect x="64" y="462" width="492" height="118" rx="10" fill="#ffffff" stroke="#f97316"/>
+<text x="80" y="488" font-size="15" font-weight="700" fill="#0f172a">UC01.c &#8212; Business Decision Support</text>
+<text x="80" y="510" font-size="12" fill="#334155">Estate data + public-domain sentiment, cross-domain synthesis,</text>
+<text x="80" y="528" font-size="12" fill="#334155">cited insight reports; recommend-then-approve (ADR021 pattern)</text>
+<text x="80" y="552" font-size="11" font-weight="700" fill="#7c2d12">12&#8211;24 mo</text>
+<text x="155" y="552" font-size="11" fill="#64748b">&#8226; ADR024, ADR018 (aggregates only)</text>
+
+<!-- UC02 column -->
+<rect x="610" y="150" width="540" height="450" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="634" y="182" font-size="13" font-weight="700" fill="#f59e0b" letter-spacing="1">UC02 &#8212; ANIMAL HEALTH &amp; FEEDING MONITORING</text>
+<text x="634" y="204" font-size="12" fill="#78350f">Parent: tiered anomaly detection + keeper confirm/dismiss (ADR002/005/006/007)</text>
+
+<rect x="634" y="222" width="492" height="88" rx="10" fill="#ffffff" stroke="#22c55e"/>
+<text x="650" y="248" font-size="15" font-weight="700" fill="#0f172a">UC02.a &#8212; Maintenance &amp; Repair Scheduling</text>
+<text x="650" y="270" font-size="12" fill="#334155">Work orders, sync-to-site, availability feed to ticket SaaS &amp; surfaces;</text>
+<text x="650" y="288" font-size="12" fill="#334155">predictive maintenance = named future extension</text>
+<text x="650" y="300" font-size="11" font-weight="700" fill="#166534">3&#8211;6 mo</text>
+
+<rect x="634" y="322" width="492" height="106" rx="10" fill="#ffffff" stroke="#eab308"/>
+<text x="650" y="348" font-size="15" font-weight="700" fill="#0f172a">UC02.b &#8212; Flora &amp; Husbandry Standards + Predictions</text>
+<text x="650" y="370" font-size="12" fill="#334155">Versioned SOPs (fauna tiers + flora), auditable care logs, seasonal &amp;</text>
+<text x="650" y="388" font-size="12" fill="#334155">daily weather-grounded care predictions &#8212; AI recommends, human confirms</text>
+<text x="650" y="412" font-size="11" font-weight="700" fill="#713f12">6&#8211;12 mo</text>
+<text x="725" y="412" font-size="11" fill="#64748b">&#8226; ADR026, ADR024</text>
+
+<rect x="634" y="440" width="492" height="70" rx="10" fill="#ffffff" stroke="#ec4899"/>
+<text x="650" y="462" font-size="15" font-weight="700" fill="#0f172a">UC02.c &#8212; Satellite Flora Monitoring</text>
+<text x="650" y="480" font-size="12" fill="#334155">Commercial feed subscription (no leased satellite), nightly/day-spread jobs,</text>
+<text x="650" y="494" font-size="12" fill="#334155">standards-tailored AI analysis; closes the ADR014 object-storage gap</text>
+<text x="650" y="507" font-size="11" font-weight="700" fill="#831843">24 mo</text>
+
+<!-- UC02.d and UC02.e -->
+<rect x="634" y="522" width="236" height="64" rx="10" fill="#ffffff" stroke="#eab308"/>
+<text x="648" y="544" font-size="13" font-weight="700" fill="#0f172a">UC02.d &#8212; Public-Alert Scanning</text>
+<text x="648" y="560" font-size="11" fill="#334155">Continuous-simulating scan of public</text>
+<text x="648" y="574" font-size="11" fill="#334155">notices &#8594; decision-maker alerts (ADR007)</text>
+<text x="648" y="582" font-size="10" font-weight="700" fill="#713f12">6&#8211;12 mo</text>
+<rect x="890" y="522" width="236" height="64" rx="10" fill="#ffffff" stroke="#f97316"/>
+<text x="904" y="544" font-size="13" font-weight="700" fill="#0f172a">UC02.e &#8212; Compliance Advisory</text>
+<text x="904" y="560" font-size="11" fill="#334155">LLM advisory on SOP/regulations, clause-cited,</text>
+<text x="904" y="574" font-size="11" fill="#334155">human-in-loop (ADR026)</text>
+<text x="904" y="582" font-size="10" font-weight="700" fill="#7c2d12">12 mo</text>
+
+<!-- UC04 column -->
+<rect x="1180" y="150" width="540" height="450" rx="12" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="1.5"/>
+<text x="1204" y="182" font-size="13" font-weight="700" fill="#8b5cf6" letter-spacing="1">UC04 &#8212; RETURNING VISITOR PERSONALIZATION</text>
+<text x="1204" y="204" font-size="12" fill="#4c1d95">Parent: Phase One loyalty &#8594; Phase Two AI, gated on data maturity (ADR008)</text>
+
+<rect x="1204" y="222" width="492" height="88" rx="10" fill="#ffffff" stroke="#eab308"/>
+<text x="1220" y="248" font-size="15" font-weight="700" fill="#0f172a">UC04.d &#8212; Dynamic Pricing &amp; Pre-Exit Refunds</text>
+<text x="1220" y="270" font-size="12" fill="#334155">AI-recommended, human-approved discounts within policy bands;</text>
+<text x="1220" y="288" font-size="12" fill="#334155">refunds are deterministic policy only &#8212; autonomous pricing fenced off (ADR027)</text>
+<text x="1220" y="300" font-size="11" font-weight="700" fill="#713f12">6&#8211;12 mo</text>
+
+<rect x="1204" y="322" width="236" height="64" rx="10" fill="#ffffff" stroke="#f97316"/>
+<text x="1218" y="344" font-size="13" font-weight="700" fill="#0f172a">UC04.b &#8212; Guided Tour Itineraries</text>
+<text x="1218" y="360" font-size="11" fill="#334155">LLM-generated 1/2/3-day plans,</text>
+<text x="1218" y="374" font-size="11" fill="#334155">grounded + personalized (ADR022)</text>
+<text x="1218" y="382" font-size="10" font-weight="700" fill="#7c2d12">12 mo</text>
+<rect x="1460" y="322" width="236" height="64" rx="10" fill="#ffffff" stroke="#f97316"/>
+<text x="1474" y="344" font-size="13" font-weight="700" fill="#0f172a">UC04.c &#8212; MCP Planner Endpoint</text>
+<text x="1474" y="360" font-size="11" fill="#334155">Governed tools for LLM planners on</text>
+<text x="1474" y="374" font-size="11" fill="#334155">visitor site (ADR025)</text>
+<text x="1474" y="382" font-size="10" font-weight="700" fill="#7c2d12">12 mo</text>
+
+<rect x="1204" y="398" width="492" height="90" rx="10" fill="#ffffff" stroke="#ec4899"/>
+<text x="1220" y="424" font-size="15" font-weight="700" fill="#0f172a">UC04.a &#8212; AR Wayfinding App (forked OSS)</text>
+<text x="1220" y="446" font-size="12" fill="#334155">Offline-first season map/hunt packs, position-aware guidance,</text>
+<text x="1220" y="464" font-size="12" fill="#334155">opt-in telemetry &#8594; UC01; fork target = future spike (ADR025 API now)</text>
+<text x="1220" y="480" font-size="11" font-weight="700" fill="#831843">24 mo</text>
+
+<rect x="1204" y="500" width="492" height="86" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="6 4"/>
+<text x="1220" y="526" font-size="14" font-weight="700" fill="#334155">Shared: ADR025 versioned client/MCP API surface</text>
+<text x="1220" y="548" font-size="12" fill="#64748b">One OAuth'd, rate-limited, versioned read API serves AR app + MCP;</text>
+<text x="1220" y="566" font-size="12" fill="#64748b">telemetry upload is the sole visitor write path (opt-in, ADR018)</text>
+<text x="1220" y="580" font-size="11" fill="#64748b">Lands as a new /api/v1 router in the existing monolith &#8212; no new service</text>
+
+<text x="40" y="626" font-size="12" fill="#94a3b8">All extended cases checked against the module service map: every capability lands in an existing service; guardrails ADR007 (human confirmation) + ADR011 (golden-set) apply unchanged. Index: usecases/extended-uc-index.md</text>
+</svg>

@@ -115,8 +115,27 @@ fixed calendar date.
   ticketing and popularity analytics alone already address two of the
   three named business challenges in the brief.
 
+## Extended Use Cases — Horizon Mapping
+
+The extended use cases program ([index](../usecases/extended-uc-index.md))
+maps 14 business capabilities onto this phasing. Horizons are planned
+against the phase evidence-gates above, not instead of them:
+
+| Horizon | Extended cases | Phase alignment |
+|---|---|---|
+| 3–6 mo | UC01.a real-time occupancy & hotspot alerts (ADR023); UC02.a maintenance/repair scheduling + availability feed | Late Phase 0 / Phase 1 — rides the ticketing + popularity foundations |
+| 6–12 mo | UC04.d dynamic pricing & refunds (ADR027); UC02.b flora/husbandry standards & logs; UC02.d public-alert scanning | Phase 1 → Phase 2 — monitoring guardrail patterns extended to assets, flora, and public-domain feeds |
+| 12 mo | UC01.b weather-aware visibility forecast; UC04.b guided-tour itineraries; UC04.c MCP planner; UC02.e compliance advisory | Phase 2 — needs a season of data (ADR008 gate) and the ADR024/ADR026 machinery landed first |
+| 24 mo | UC04.a AR wayfinding app (forked OSS, needs ADR025 API + fork-target spike); UC02.c satellite flora monitoring (subscription costed first); UC01.c business decision support | Phase 3 — evaluated alongside the Phase Two personalization trigger |
+
+The same cross-phase principles apply unchanged: no extended case
+skips the golden-set/ADR007 guardrails when its AI parts land, and
+each horizon gate is evidence-based.
+
 ## Related Documents
-- [Cost Analysis](cost-analysis.md)
+- [Extended Use Cases Index](../usecases/extended-uc-index.md)
+- [Cost Analysis](cost-analysis.md) — must be updated before the
+  satellite subscription (UC02.c) is contracted
 - [Architecture Characteristics](architecture-characteristics.md)
 - [Fitness Functions](fitness-functions.md)
 - [ADR Summary — Final Decisions & Advice](../adviceforum/adr-summary-decisions-and-advice.md)
