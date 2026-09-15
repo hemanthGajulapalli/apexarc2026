@@ -52,4 +52,4 @@ Keeper review is a throughput bottleneck *by design*; vision counting is a decis
 
 ## Deeper reading
 
-[Full README](README.md) · [ADRs](ADRs/) · [Use case designs](usecases/) · [Test approach](usecases/test-approach.md) · [Architecture characteristics](other_design_docs/architecture-characteristics.md) · [Cost analysis](other_design_docs/cost-analysis.md) · [Wireframes](wireframes/landing-page-wireframe.html) · [Glossary](business-requirements/glossary.md)
+[Full README](FullREADME.md) · [ADRs](ADRs/) · [Use case designs](usecases/) · [Test approach](usecases/test-approach.md) · [Architecture characteristics](other_design_docs/architecture-characteristics.md) · [Cost analysis](other_design_docs/cost-analysis.md) · [Wireframes](wireframes/landing-page-wireframe.html) · [Glossary](business-requirements/glossary.md)
