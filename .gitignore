@@ -1,5 +1,15 @@
 # Dependencies
 node_modules/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local secrets (see .env.example for the template)
+.env
+
+# Local backups produced by deploy/cli.py db backup
+backups/
 
 # Local Postgres data directory (deliberately kept outside git and outside
 # ~/Documents entirely — see implementation/README.md for why; this repo
