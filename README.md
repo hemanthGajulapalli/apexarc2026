@@ -2,6 +2,13 @@
 
 *Short form of [README.md](README.md). O'Reilly Architectural Katas 2026 — AI-Assisted Software Architecture.*
 
+## Team
+**Apex Architects**
+<!-- Add team member names, roles, and links here, e.g.:
+- [**Name**](https://linkedin.com/in/...), Role
+-->
+![Team](assets/Team_Apex_Architects.png)
+
 ## The problem
 
 A sprawling estate — 40 antique rides, 200+ animals across 55 enclosures, and the grounds — must go from **~5,000 to 15,000 visitors/day in 3 years** or the family sells off holdings. Today there's no ticketing, no idea which attractions draw crowds, no systematic animal monitoring, and **patchy WiFi** that constrains nearly every technical choice. Budget exists for MQTT-capable devices.
