@@ -33,7 +33,7 @@ A structured approach to the **O'Reilly Architectural Katas 2026 — AI-Assisted
 <!-- Add team member names, roles, and links here, e.g.:
 - [**Name**](https://linkedin.com/in/...), Role
 -->
-
+![Team](assets/Team_Apex_Architects.png)
 ## Glossary
 [Glossary](business-requirements/glossary.md) — ADR, LoRaWAN, MQTT, species-tiered monitoring, golden-set regression, and the other terms used throughout this repo.
 
