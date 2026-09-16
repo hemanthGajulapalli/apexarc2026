@@ -29,7 +29,7 @@ A structured approach to the **O'Reilly Architectural Katas 2026 — AI-Assisted
   - [Our Learnings](#our-learnings)
 
 ## Team
-**Apex Warriors**
+**Apex Architects**
 <!-- Add team member names, roles, and links here, e.g.:
 - [**Name**](https://linkedin.com/in/...), Role
 -->
